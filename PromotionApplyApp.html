@@ -1,0 +1,1507 @@
+<style id="promotion-apply-app-style">
+  .promotion-apply-app {
+    --accent: #0052cc;
+    --accent-light: #e6f0ff;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --border: #d9e2f3;
+    --text: #142041;
+    --muted: #5c637a;
+    --danger: #d14343;
+    --success: #1f8a70;
+    --warning: #c17d0f;
+    font-family: 'Noto Sans JP', system-ui, -apple-system, BlinkMacSystemFont,
+      'Segoe UI', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    width: 100%;
+  }
+
+  .promotion-apply-app *,
+  .promotion-apply-app *::before,
+  .promotion-apply-app *::after {
+    box-sizing: border-box;
+  }
+
+  .promotion-apply-app .page-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px clamp(16px, 4vw, 48px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .promotion-apply-app .header-text {
+    max-width: 720px;
+  }
+
+  .promotion-apply-app .eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+
+  .promotion-apply-app .page-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .promotion-apply-app .lead {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .promotion-apply-app .back-link {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 18px;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    background: var(--accent-light);
+  }
+
+  .promotion-apply-app main {
+    padding: clamp(16px, 4vw, 48px);
+  }
+
+  .promotion-apply-app .sheet-card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 21, 64, 0.08);
+    padding: clamp(16px, 4vw, 36px);
+  }
+
+  .promotion-apply-app .sheet-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .promotion-apply-app .control-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .promotion-apply-app .sheet-controls h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .promotion-apply-app .secondary-button,
+  .promotion-apply-app .primary-button {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .promotion-apply-app .secondary-button {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  .promotion-apply-app .secondary-button:hover,
+  .promotion-apply-app .primary-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 82, 204, 0.2);
+  }
+
+  .promotion-apply-app .primary-button {
+    background: var(--accent);
+    color: #fff;
+    min-width: 160px;
+  }
+
+  .promotion-apply-app .utility-button {
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .promotion-apply-app .utility-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 82, 204, 0.12);
+  }
+
+  .promotion-apply-app .helper-text {
+    margin: 12px 0 16px;
+    color: var(--muted);
+  }
+
+  .promotion-apply-app .sheet-wrapper {
+    width: calc(100% + clamp(16px, 4vw, 36px) * 2);
+    margin-left: calc(-1 * clamp(16px, 4vw, 36px));
+    margin-right: calc(-1 * clamp(16px, 4vw, 36px));
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fdfefe;
+  }
+
+  .promotion-apply-app .sheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+  }
+
+  .promotion-apply-app .sheet-table thead {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .promotion-apply-app .sheet-table th,
+  .promotion-apply-app .sheet-table td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .promotion-apply-app .selection-column,
+  .promotion-apply-app .selection-cell {
+    width: 80px;
+    text-align: center;
+  }
+
+  .promotion-apply-app .row-select-checkbox {
+    width: 16px;
+    height: 16px;
+  }
+
+  .promotion-apply-app .sheet-table th {
+    font-weight: 600;
+  }
+
+  .promotion-apply-app .col-letter {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    opacity: 0.85;
+  }
+
+  .promotion-apply-app .sheet-table input,
+  .promotion-apply-app .sheet-table textarea,
+  .promotion-apply-app .sheet-table select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font: inherit;
+    resize: vertical;
+    min-height: 32px;
+  }
+
+  .promotion-apply-app .sheet-table textarea {
+    min-height: 48px;
+  }
+
+  .promotion-apply-app .sheet-table input:focus,
+  .promotion-apply-app .sheet-table textarea:focus,
+  .promotion-apply-app .sheet-table select:focus {
+    outline: 2px solid var(--accent-light);
+    border-radius: 4px;
+  }
+
+  .promotion-apply-app .sheet-table .input-invalid,
+  .promotion-apply-app .sheet-table .input-missing {
+    outline: 2px solid var(--danger);
+    border-radius: 4px;
+    background: rgba(209, 67, 67, 0.05);
+  }
+
+  .promotion-apply-app .actions {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .promotion-apply-app .notice {
+    margin: 16px 0 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #fff8e1;
+    color: #5a4200;
+    border: 1px solid #ffe9a7;
+  }
+
+  .promotion-apply-app .status {
+    min-height: 24px;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+
+  .promotion-apply-app .validation-warning {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fff5f5;
+    border: 1px solid rgba(209, 67, 67, 0.3);
+  }
+
+  .promotion-apply-app .status--error {
+    color: var(--danger);
+  }
+
+  .promotion-apply-app .status--success {
+    color: var(--success);
+  }
+
+  .promotion-apply-app .result-panel {
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .promotion-apply-app .result-summary {
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .promotion-apply-app .result-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .promotion-apply-app .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 480px;
+  }
+
+  .promotion-apply-app .result-table th,
+  .promotion-apply-app .result-table td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+  }
+
+  .promotion-apply-app .execution-log {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f9fbff;
+  }
+
+  .promotion-apply-app .execution-log__title {
+    margin: 0 0 10px;
+    font-size: 1rem;
+  }
+
+  .promotion-apply-app .execution-log__list {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .promotion-apply-app .execution-log__item {
+    line-height: 1.4;
+  }
+
+  .promotion-apply-app .execution-log__badge {
+    display: inline-block;
+    min-width: 64px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    margin-right: 6px;
+  }
+
+  .promotion-apply-app .execution-log__badge.info {
+    background: rgba(0, 82, 204, 0.12);
+    color: var(--accent);
+  }
+
+  .promotion-apply-app .execution-log__badge.success {
+    background: rgba(31, 138, 112, 0.15);
+    color: var(--success);
+  }
+
+  .promotion-apply-app .execution-log__badge.error {
+    background: rgba(209, 67, 67, 0.15);
+    color: var(--danger);
+  }
+
+  .promotion-apply-app .execution-log__badge.warning {
+    background: rgba(193, 125, 15, 0.15);
+    color: var(--warning);
+  }
+
+  .promotion-apply-app .status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .promotion-apply-app .status-pill.success {
+    background: rgba(31, 138, 112, 0.15);
+    color: var(--success);
+  }
+
+  .promotion-apply-app .status-pill.error {
+    background: rgba(209, 67, 67, 0.15);
+    color: var(--danger);
+  }
+
+  .promotion-apply-app .status-pill.skipped {
+    background: rgba(113, 118, 134, 0.15);
+    color: var(--muted);
+  }
+
+  .promotion-apply-app--inline {
+    background: transparent;
+  }
+
+  .promotion-apply-app--inline main {
+    padding: 0;
+  }
+
+  .promotion-apply-app--inline .sheet-card {
+    box-shadow: none;
+    border-radius: 12px;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .promotion-apply-app--inline .sheet-wrapper {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 12px;
+  }
+
+  .promotion-apply-app--inline .page-header {
+    display: none;
+  }
+</style>
+
+<template id="promotion-apply-app-template">
+  <div class="promotion-apply-app">
+    <header class="page-header">
+      <div class="header-text">
+        <p class="eyebrow" id="app-eyebrow">Partnership Apply</p>
+        <h1 id="app-title">提携申請シート</h1>
+        <p class="lead" id="app-lead">
+          広告名とメディア名を入力すると、対応するIDを検索して提携申請を送信します。
+        </p>
+      </div>
+      <a class="back-link" id="back-link">ポータルへ戻る</a>
+    </header>
+
+    <main>
+      <section class="sheet-card">
+        <div class="sheet-controls">
+          <h2>入力シート</h2>
+          <div class="control-buttons">
+            <button type="button" class="secondary-button" id="add-row-button">
+              ＋ 行を追加
+            </button>
+            <button type="button" class="utility-button" id="delete-selected-button">
+              選択行を削除
+            </button>
+            <button type="button" class="utility-button" id="clear-rows-button">
+              一括クリア
+            </button>
+          </div>
+        </div>
+        <div id="helper-text-container"></div>
+        <p
+          id="validation-warning"
+          class="status status--error validation-warning"
+          role="alert"
+          hidden
+        ></p>
+        <div class="sheet-wrapper">
+          <table class="sheet-table" aria-label="提携申請データ">
+            <thead id="sheet-head"></thead>
+            <tbody id="media-grid-body"></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary-button" id="execute-button">
+            実行
+          </button>
+          <span id="row-count"></span>
+        </div>
+        <p class="notice" id="environment-warning" hidden>
+          プレビュー環境のため実行できません。Google Apps Script のWebアプリとして開いた状態でご利用ください。
+        </p>
+        <p id="status-message" class="status" role="status" aria-live="polite"></p>
+        <section id="result-panel" class="result-panel" hidden>
+          <h3>処理結果</h3>
+          <div id="result-summary" class="result-summary"></div>
+          <div class="result-table-wrapper">
+            <table class="result-table">
+              <thead id="result-head"></thead>
+              <tbody id="result-body"></tbody>
+            </table>
+          </div>
+          <div id="log-panel" class="execution-log" hidden>
+            <h4 class="execution-log__title">実行ログ</h4>
+            <ol id="log-list" class="execution-log__list"></ol>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+</template>
+
+<script>
+  (function () {
+    if (window.renderPromotionApplyApp) {
+      return;
+    }
+
+    function renderPromotionApplyApp(container, options) {
+      if (!container) {
+        console.warn('PromotionApplyApp: container element is required.');
+        return null;
+      }
+
+      const template = document.getElementById('promotion-apply-app-template');
+      if (!template) {
+        console.error('PromotionApplyApp: template element is missing.');
+        return null;
+      }
+
+      container.innerHTML = '';
+      const fragment = template.content.cloneNode(true);
+      container.appendChild(fragment);
+
+      const root = container.querySelector('.promotion-apply-app');
+      if (!root) {
+        console.error('PromotionApplyApp: failed to initialize.');
+        return null;
+      }
+
+      const settings = Object.assign(
+        {
+          initialRows: 5,
+          portalUrl: '',
+          showBackLink: true,
+          showHeader: true,
+          mode: 'standalone',
+        },
+        options || {},
+      );
+
+      if (settings.mode === 'inline') {
+        root.classList.add('promotion-apply-app--inline');
+      }
+
+      const backLink = root.querySelector('#back-link');
+      if (!settings.showHeader) {
+        const header = root.querySelector('.page-header');
+        if (header) {
+          header.remove();
+        }
+      } else if (backLink) {
+        if (settings.showBackLink) {
+          const rawPortalUrl = typeof settings.portalUrl === 'string' ? settings.portalUrl : '';
+          const resolvedPortalUrl = rawPortalUrl && rawPortalUrl.indexOf('<?') === -1
+            ? rawPortalUrl
+            : './';
+          backLink.href = resolvedPortalUrl || './';
+        } else {
+          backLink.hidden = true;
+        }
+      }
+
+      if (backLink && !settings.showBackLink) {
+        backLink.hidden = true;
+      }
+
+      const helperTextContainer = root.querySelector('#helper-text-container');
+      const eyebrow = root.querySelector('#app-eyebrow');
+      const title = root.querySelector('#app-title');
+      const lead = root.querySelector('#app-lead');
+
+      const DEFAULT_CONFIG = {
+        eyebrow: 'Partnership Apply',
+        title: '提携申請シート',
+        lead:
+          '広告名とメディア名を入力すると、対応するIDを検索して提携申請を送信します。',
+        helperTexts: [
+          'A列に提携申請したい広告の「広告名」または「広告ID」を入力してください。',
+          'B列に申請対象となるメディアの「メディア名」または「メディアID」を入力してください。スプレッドシートのコピー＆ペーストも利用できます。',
+          '広告名・メディア名から ID を検索するときはローカルのマスタではなく、毎回 /promotion/search と /media/search の API 結果から ID を取得して申請します。',
+        ],
+        columns: [
+          {
+            key: 'promotionIdentifier',
+            letter: 'A',
+            label: '広告名 / 広告ID',
+            placeholder: '例: サンプル広告A',
+          },
+          {
+            key: 'mediaIdentifier',
+            letter: 'B',
+            label: 'メディア名 / メディアID',
+            placeholder: '例: サンプルメディア1',
+          },
+        ],
+        resultColumns: [
+          { key: 'rowNumber', label: '行番号' },
+          { key: 'status', label: 'ステータス', type: 'status' },
+          { key: 'promotionId', label: '広告ID' },
+          { key: 'mediaId', label: 'メディアID' },
+          { key: 'message', label: 'メッセージ' },
+        ],
+      };
+
+      const helperTexts = Array.isArray(settings.helperTexts) && settings.helperTexts.length
+        ? settings.helperTexts
+        : DEFAULT_CONFIG.helperTexts;
+
+      if (eyebrow) {
+        eyebrow.textContent = settings.eyebrow || DEFAULT_CONFIG.eyebrow;
+      }
+      if (title) {
+        title.textContent = settings.title || DEFAULT_CONFIG.title;
+      }
+      if (lead) {
+        lead.textContent = settings.lead || DEFAULT_CONFIG.lead;
+      }
+      if (helperTextContainer) {
+        helperTextContainer.innerHTML = '';
+        helperTexts.forEach((text) => {
+          if (!text) {
+            return;
+          }
+          const paragraph = document.createElement('p');
+          paragraph.className = 'helper-text';
+          paragraph.textContent = text;
+          helperTextContainer.appendChild(paragraph);
+        });
+      }
+
+      const columns = Array.isArray(settings.columns) && settings.columns.length
+        ? settings.columns
+        : DEFAULT_CONFIG.columns;
+      const resultColumns = Array.isArray(settings.resultColumns) && settings.resultColumns.length
+        ? settings.resultColumns
+        : DEFAULT_CONFIG.resultColumns;
+      const defaultAction = 'registerPromotionApplicationsFromWeb';
+      const actionFunction = typeof settings.actionFunction === 'string'
+        ? settings.actionFunction
+        : defaultAction;
+
+      const columnLabelMap = columns.reduce((acc, column) => {
+        acc[column.key] = column.label;
+        return acc;
+      }, {});
+
+      const tableHead = root.querySelector('#sheet-head');
+      const tableBody = root.querySelector('#media-grid-body');
+      const resultHead = root.querySelector('#result-head');
+      const addRowButton = root.querySelector('#add-row-button');
+      const deleteSelectedButton = root.querySelector('#delete-selected-button');
+      const clearRowsButton = root.querySelector('#clear-rows-button');
+      const executeButton = root.querySelector('#execute-button');
+      const statusMessage = root.querySelector('#status-message');
+      const rowCountLabel = root.querySelector('#row-count');
+      const resultPanel = root.querySelector('#result-panel');
+      const resultSummary = root.querySelector('#result-summary');
+      const resultBody = root.querySelector('#result-body');
+      const logPanel = root.querySelector('#log-panel');
+      const logList = root.querySelector('#log-list');
+      const environmentWarning = root.querySelector('#environment-warning');
+      const validationWarning = root.querySelector('#validation-warning');
+      let validationMessages = [];
+      let lastValidationDetails = { invalidSelects: [], incompleteRows: [] };
+      let isProcessing = false;
+
+      buildTableHead();
+      buildResultHead();
+      const initialRowCount = Math.max(1, Number(settings.initialRows) || 5);
+      ensureRowCount(initialRowCount);
+      handleValidationState();
+
+      const gasRunnerAvailable =
+        typeof google === 'object' &&
+        google.script &&
+        typeof google.script.run === 'object';
+
+      if (!gasRunnerAvailable && environmentWarning) {
+        environmentWarning.hidden = false;
+      }
+
+      if (addRowButton) {
+        addRowButton.addEventListener('click', () => {
+          addRow();
+        });
+      }
+
+      if (deleteSelectedButton) {
+        deleteSelectedButton.addEventListener('click', removeSelectedRows);
+      }
+
+      if (clearRowsButton) {
+        clearRowsButton.addEventListener('click', clearAllRows);
+      }
+
+      if (executeButton) {
+        executeButton.addEventListener('click', handleExecute);
+      }
+
+      if (tableBody) {
+        tableBody.addEventListener('paste', handlePaste, true);
+      }
+
+      function buildTableHead() {
+        if (!tableHead) {
+          return;
+        }
+        tableHead.innerHTML = '';
+        const headRow = document.createElement('tr');
+        const selectTh = document.createElement('th');
+        selectTh.scope = 'col';
+        selectTh.className = 'selection-column';
+        selectTh.textContent = '選択';
+        headRow.appendChild(selectTh);
+        columns.forEach((column) => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          const letter = document.createElement('span');
+          letter.className = 'col-letter';
+          letter.textContent = column.letter;
+          const label = document.createElement('span');
+          label.textContent = column.label;
+          th.appendChild(letter);
+          th.appendChild(label);
+          headRow.appendChild(th);
+        });
+        tableHead.appendChild(headRow);
+      }
+
+      function buildResultHead() {
+        if (!resultHead) {
+          return;
+        }
+        resultHead.innerHTML = '';
+        const headRow = document.createElement('tr');
+        resultColumns.forEach((column) => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          th.textContent = column.label;
+          headRow.appendChild(th);
+        });
+        resultHead.appendChild(headRow);
+      }
+
+
+      function createSelectionCell(rowNumber) {
+        const cell = document.createElement('td');
+        cell.className = 'selection-cell';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'row-select-checkbox';
+        checkbox.setAttribute('aria-label', `行${rowNumber}を選択`);
+        cell.appendChild(checkbox);
+        return cell;
+      }
+
+      function createInputElement(column, rowNumber) {
+        let input;
+        if (Array.isArray(column.options) && column.options.length) {
+          input = document.createElement('select');
+          input.dataset.validOptions = column.options.join('|');
+          const emptyOption = document.createElement('option');
+          emptyOption.value = '';
+          emptyOption.textContent = '選択してください';
+          input.appendChild(emptyOption);
+          column.options.forEach((value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            input.appendChild(option);
+          });
+          input.addEventListener('change', () => {
+            clearInvalidState(input);
+            handleValidationState();
+          });
+        } else if (column.multiline) {
+          input = document.createElement('textarea');
+        } else {
+          input = document.createElement('input');
+          input.type = 'text';
+        }
+        input.dataset.columnKey = column.key;
+        input.setAttribute('aria-label', `${column.label}（行${rowNumber}）`);
+        if (input.tagName !== 'SELECT') {
+          input.addEventListener('input', () => {
+            handleValidationState();
+          });
+        }
+        return input;
+      }
+
+      function addRow() {
+        if (!tableBody) {
+          return null;
+        }
+        const rowNumber = tableBody.children.length + 1;
+        const row = document.createElement('tr');
+        row.dataset.rowNumber = rowNumber;
+        const selectionCell = createSelectionCell(rowNumber);
+        row.appendChild(selectionCell);
+
+        columns.forEach((column) => {
+          const cell = document.createElement('td');
+          const input = createInputElement(column, rowNumber);
+          if (column.placeholder && input.tagName !== 'SELECT') {
+            input.placeholder = column.placeholder;
+          }
+          cell.appendChild(input);
+          row.appendChild(cell);
+        });
+
+        tableBody.appendChild(row);
+        refreshRowMetadata();
+        return row;
+      }
+
+      function ensureRowCount(count) {
+        if (!tableBody) {
+          return;
+        }
+        while (tableBody.children.length < count) {
+          addRow();
+        }
+      }
+
+      function refreshRowMetadata() {
+        if (!tableBody) {
+          return;
+        }
+        const rows = Array.from(tableBody.children);
+        rows.forEach((row, index) => {
+          const rowNumber = index + 1;
+          row.dataset.rowNumber = rowNumber;
+          const checkbox = row.querySelector('.row-select-checkbox');
+          if (checkbox) {
+            checkbox.setAttribute('aria-label', `行${rowNumber}を選択`);
+          }
+        });
+        updateRowCount();
+      }
+
+      function clearAllRows() {
+        if (!tableBody) {
+          return;
+        }
+        tableBody.innerHTML = '';
+        ensureRowCount(initialRowCount);
+        refreshRowMetadata();
+        handleValidationState();
+      }
+
+      function removeSelectedRows() {
+        if (!tableBody) {
+          return;
+        }
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        let removed = 0;
+        rows.forEach((row) => {
+          const checkbox = row.querySelector('.row-select-checkbox');
+          if (checkbox && checkbox.checked) {
+            row.remove();
+            removed++;
+          }
+        });
+        if (!tableBody.children.length) {
+          ensureRowCount(1);
+        }
+        if (removed) {
+          refreshRowMetadata();
+          handleValidationState();
+        } else {
+          updateRowCount();
+        }
+      }
+
+      function getValidOptionsFromInput(input) {
+        if (!input || !input.dataset.validOptions) {
+          return [];
+        }
+        return input.dataset.validOptions.split('|').filter(Boolean);
+      }
+
+      function clearInvalidState(input) {
+        if (!input) {
+          return;
+        }
+        input.classList.remove('input-invalid');
+        delete input.dataset.invalidValue;
+        if (!input.dataset.missing) {
+          input.removeAttribute('aria-invalid');
+        }
+      }
+
+      function markInvalidSelect(input, invalidValue) {
+        if (!input) {
+          return;
+        }
+        input.dataset.invalidValue = invalidValue;
+        input.classList.add('input-invalid');
+        input.setAttribute('aria-invalid', 'true');
+      }
+
+      function clearMissingState(input) {
+        if (!input) {
+          return;
+        }
+        input.classList.remove('input-missing');
+        delete input.dataset.missing;
+        if (!input.dataset.invalidValue) {
+          input.removeAttribute('aria-invalid');
+        }
+      }
+
+      function markMissingInput(input) {
+        if (!input) {
+          return;
+        }
+        input.dataset.missing = 'true';
+        input.classList.add('input-missing');
+        input.setAttribute('aria-invalid', 'true');
+      }
+
+      function setInputValue(input, value) {
+        if (!input) {
+          return;
+        }
+        const rawValue =
+          typeof value === 'string'
+            ? value
+            : value === null || typeof value === 'undefined'
+              ? ''
+              : String(value);
+        const normalizedValue = rawValue.trim();
+        if (input.tagName === 'SELECT') {
+          const validOptions = getValidOptionsFromInput(input);
+          if (!normalizedValue) {
+            input.value = '';
+            clearInvalidState(input);
+          } else if (validOptions.includes(normalizedValue)) {
+            input.value = normalizedValue;
+            clearInvalidState(input);
+          } else {
+            input.value = '';
+            markInvalidSelect(input, normalizedValue);
+          }
+          handleValidationState();
+        } else {
+          input.value = rawValue;
+        }
+      }
+
+      function getInvalidSelectInputs() {
+        if (!tableBody) {
+          return [];
+        }
+        return Array.from(tableBody.querySelectorAll('select')).filter((input) =>
+          Boolean(input.dataset.invalidValue),
+        );
+      }
+
+      function getIncompleteRows() {
+        if (!tableBody) {
+          return [];
+        }
+        const rows = [];
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        tableRows.forEach((row, index) => {
+          const rowNumber = Number(row.dataset.rowNumber) || index + 1;
+          const missingColumns = [];
+          let hasAnyValue = false;
+          columns.forEach((column) => {
+            const input = row.querySelector(`[data-column-key="${column.key}"]`);
+            const value = input ? input.value.trim() : '';
+            clearMissingState(input);
+            if (value) {
+              hasAnyValue = true;
+            } else {
+              missingColumns.push({ columnKey: column.key, label: column.label, input });
+            }
+          });
+          if (hasAnyValue && missingColumns.length) {
+            missingColumns.forEach(({ input }) => {
+              markMissingInput(input);
+            });
+            rows.push({
+              rowNumber,
+              missingColumns: missingColumns.map(({ columnKey, label }) => ({
+                key: columnKey,
+                label,
+              })),
+            });
+          }
+        });
+        return rows;
+      }
+
+      function getRowNumberFromInput(input) {
+        if (!input) {
+          return '';
+        }
+        const row = input.closest('tr');
+        return row ? row.dataset.rowNumber || '' : '';
+      }
+
+      function getColumnLabel(key) {
+        return columnLabelMap[key] || key;
+      }
+
+      function handleValidationState() {
+        const invalidInputs = getInvalidSelectInputs();
+        const incompleteRows = getIncompleteRows();
+        lastValidationDetails = { invalidSelects: invalidInputs, incompleteRows };
+        const messages = [];
+
+        if (invalidInputs.length) {
+          const details = invalidInputs.map((input) => {
+            const columnKey = input.dataset.columnKey || '';
+            const columnLabel = getColumnLabel(columnKey);
+            const rowNumber = getRowNumberFromInput(input);
+            const invalidValue = input.dataset.invalidValue || '';
+            return `行${rowNumber}の${columnLabel}に無効な値「${invalidValue}」が入力されています。`;
+          });
+          messages.push(details.join(' '));
+        }
+
+        if (incompleteRows.length) {
+          incompleteRows.forEach((row) => {
+            const columnLabels = row.missingColumns.map((column) => column.label).join(' / ');
+            messages.push(`行${row.rowNumber}で未入力の項目があります（${columnLabels}）。`);
+          });
+        }
+
+        validationMessages = messages;
+        if (validationWarning) {
+          if (!messages.length) {
+            validationWarning.hidden = true;
+            validationWarning.textContent = '';
+          } else {
+            validationWarning.hidden = false;
+            validationWarning.textContent = messages.join(' ');
+          }
+        }
+        updateExecuteButtonDisabled();
+      }
+
+      function hasValidationErrors() {
+        return validationMessages.length > 0;
+      }
+
+      function updateExecuteButtonDisabled() {
+        if (!executeButton) {
+          return;
+        }
+        executeButton.disabled = isProcessing || hasValidationErrors();
+      }
+
+      function collectRows() {
+        if (!tableBody) {
+          return [];
+        }
+        return Array.from(tableBody.querySelectorAll('tr')).map((row, index) => {
+          const rowNumber = Number(row.dataset.rowNumber) || index + 1;
+          const data = { rowNumber: rowNumber };
+          columns.forEach((column) => {
+            const input = row.querySelector(`[data-column-key="${column.key}"]`);
+            data[column.key] = input ? input.value.trim() : '';
+          });
+          return data;
+        });
+      }
+
+      function hasValues(row) {
+        return columns.some((column) => row[column.key]);
+      }
+
+      function handlePaste(event) {
+        const target = event.target;
+        if (
+          !target ||
+          !target.closest('tr') ||
+          !target.dataset ||
+          !target.dataset.columnKey
+        ) {
+          return;
+        }
+
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const text = clipboardData && clipboardData.getData('text');
+        if (!text) {
+          return;
+        }
+
+        const rows = parseClipboardRows(text);
+        if (!rows.length) {
+          return;
+        }
+
+        event.preventDefault();
+        const currentRow = target.closest('tr');
+        const startIndex = currentRow ? Array.from(tableBody.children).indexOf(currentRow) : 0;
+        const startColumnKey = target.dataset.columnKey || '';
+        const resolvedColumnIndex = startColumnKey
+          ? columns.findIndex((column) => column.key === startColumnKey)
+          : 0;
+        const startColumnIndex = resolvedColumnIndex >= 0 ? resolvedColumnIndex : 0;
+
+        rows.forEach((cells, rowIndex) => {
+          const targetRow = tableBody.children[startIndex + rowIndex] || addRow();
+          if (!targetRow) {
+            return;
+          }
+          cells.forEach((value, cellIndex) => {
+            const column = columns[startColumnIndex + cellIndex];
+            if (!column) {
+              return;
+            }
+            const input = targetRow.querySelector(`[data-column-key="${column.key}"]`);
+            if (input) {
+              if (input.tagName === 'SELECT') {
+                setInputValue(input, value);
+              } else {
+                const normalizedValue = normalizeClipboardValue(value);
+                input.value = normalizedValue;
+              }
+            }
+          });
+        });
+        handleValidationState();
+      }
+
+      function parseClipboardRows(text) {
+        const trimmed = typeof text === 'string' ? text.trim() : '';
+        if (!trimmed) {
+          return [];
+        }
+        const jsonRows = parseClipboardJson(trimmed);
+        if (jsonRows.length) {
+          return jsonRows;
+        }
+        const lines = splitClipboardLines(trimmed);
+        return lines
+          .map((line) => line.split(/\t/).map((cell) => cell.trim()))
+          .filter((row) => row.some((cell) => cell));
+      }
+
+      function parseClipboardJson(text) {
+        if (!/^\s*\[/.test(text)) {
+          return [];
+        }
+        const sources = [text];
+        if (text.includes("'")) {
+          const normalized = normalizeSingleQuotedJson(text);
+          if (normalized && normalized !== text) {
+            sources.push(normalized);
+          }
+        }
+        for (let i = 0; i < sources.length; i++) {
+          const source = sources[i];
+          const strictRows = tryParseClipboardJsonArray(source, { silent: i > 0 });
+          if (strictRows.length) {
+            return strictRows;
+          }
+          const multilineRows = tryParseClipboardJsonLines(source);
+          if (multilineRows.length) {
+            return multilineRows;
+          }
+        }
+        return [];
+      }
+
+      function tryParseClipboardJsonArray(source, options) {
+        try {
+          const parsed = JSON.parse(source);
+          return normalizeParsedClipboardRows(parsed);
+        } catch (error) {
+          if (!options || !options.silent) {
+            console.warn('Failed to parse clipboard JSON data.', error);
+          }
+          return [];
+        }
+      }
+
+      function tryParseClipboardJsonLines(source) {
+        const lines = typeof source === 'string'
+          ? splitClipboardLines(source)
+              .map((line) => line.trim())
+              .filter(Boolean)
+          : [];
+        if (!lines.length) {
+          return [];
+        }
+        const looksLikeArrayLine = lines.every((line) => /^\[/.test(line));
+        if (!looksLikeArrayLine) {
+          return [];
+        }
+        const wrapped = `[${lines.map((line) => line.replace(/,\s*$/, '')).join(',')}]`;
+        return tryParseClipboardJsonArray(wrapped, { silent: true });
+      }
+
+      function splitClipboardLines(value) {
+        if (typeof value !== 'string') {
+          return [];
+        }
+        return value.split(/\r\n|\n|\r|[\u2028\u2029]/);
+      }
+
+      function normalizeParsedClipboardRows(parsed) {
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+        const rows = parsed.every((item) => Array.isArray(item)) ? parsed : [parsed];
+        return rows
+          .map((row) => (Array.isArray(row) ? row.map(normalizeClipboardValue) : [normalizeClipboardValue(row)]))
+          .filter((row) => row.some((cell) => cell));
+      }
+
+      function normalizeSingleQuotedJson(text) {
+        let result = '';
+        let inSingleString = false;
+        let inDoubleString = false;
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          if (char === "'" && !inDoubleString && !isEscapedCharacter(text, i)) {
+            inSingleString = !inSingleString;
+            result += '"';
+            continue;
+          }
+          if (char === '"' && !inSingleString && !isEscapedCharacter(text, i)) {
+            inDoubleString = !inDoubleString;
+            result += char;
+            continue;
+          }
+          if (char === '"' && inSingleString && !isEscapedCharacter(text, i)) {
+            result += '\\"';
+            continue;
+          }
+          result += char;
+        }
+        if (inSingleString) {
+          return text;
+        }
+        return result;
+      }
+
+      function isEscapedCharacter(value, index) {
+        let backslashCount = 0;
+        for (let i = index - 1; i >= 0; i--) {
+          if (value[i] === '\\') {
+            backslashCount++;
+          } else {
+            break;
+          }
+        }
+        return backslashCount % 2 === 1;
+      }
+
+      function normalizeClipboardValue(value) {
+        if (value === null || typeof value === 'undefined') {
+          return '';
+        }
+        if (Array.isArray(value)) {
+          return value.map((item) => normalizeClipboardValue(item)).join(', ');
+        }
+        return String(value).trim();
+      }
+
+      function handleExecute() {
+        handleValidationState();
+        if (hasValidationErrors()) {
+          setStatus('未入力の項目、または無効な選択があるため実行できません。', 'error');
+          focusFirstInvalidField();
+          return;
+        }
+        const rows = collectRows().filter(hasValues);
+        if (!rows.length) {
+          setStatus('入力された行が見つかりません。', 'error');
+          return;
+        }
+
+        setLoading(true);
+        setStatus('処理を実行しています…');
+
+        sendRows(rows)
+          .then((result) => {
+            showResults(result || {});
+            setStatus('処理が完了しました。', 'success');
+          })
+          .catch((error) => {
+            const message =
+              (error && error.message) || error || '実行中にエラーが発生しました。';
+            setStatus(message, 'error');
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+
+      function sendRows(rows) {
+        return new Promise((resolve, reject) => {
+          if (!gasRunnerAvailable) {
+            reject(
+              new Error(
+                '実行環境が見つかりませんでした。Google Apps Script のWebアプリからアクセスしてください。',
+              ),
+            );
+            return;
+          }
+          const runner = google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject);
+          if (!actionFunction || typeof runner[actionFunction] !== 'function') {
+            reject(new Error('実行対象のサーバー関数が見つかりません。'));
+            return;
+          }
+          runner[actionFunction](rows);
+        });
+      }
+
+      function showResults(result) {
+        if (!resultPanel || !resultSummary || !resultBody) {
+          return;
+        }
+
+        const summary = result.summary || {
+          total: 0,
+          success: 0,
+          skipped: 0,
+          errors: 0,
+        };
+        resultSummary.textContent = formatSummary(summary);
+
+        resultBody.innerHTML = '';
+        const rows = Array.isArray(result.results) ? result.results : [];
+        if (!rows.length) {
+          const emptyRow = document.createElement('tr');
+          const cell = document.createElement('td');
+          cell.colSpan = resultColumns.length || 1;
+          cell.textContent = '処理対象の行がありません。';
+          emptyRow.appendChild(cell);
+          resultBody.appendChild(emptyRow);
+        } else {
+          rows.forEach((item) => {
+            const tr = document.createElement('tr');
+            resultColumns.forEach((column) => {
+              const cell = document.createElement('td');
+              const value = renderResultCell(column, item);
+              if (value instanceof Node) {
+                cell.appendChild(value);
+              } else {
+                cell.textContent = value || '';
+              }
+              tr.appendChild(cell);
+            });
+            resultBody.appendChild(tr);
+          });
+        }
+
+        resultPanel.hidden = false;
+        renderLogs(Array.isArray(result.logs) ? result.logs : []);
+      }
+
+      function renderResultCell(column, row) {
+        if (typeof column.render === 'function') {
+          return column.render(row);
+        }
+
+        if (column.type === 'status') {
+          return createStatusPill(row.status);
+        }
+
+        return row[column.key] || '';
+      }
+
+      function createStatusPill(status) {
+        const pill = document.createElement('span');
+        const statusKey = status || 'skipped';
+        pill.className = `status-pill ${statusKey}`;
+        pill.textContent = formatStatus(statusKey);
+        return pill;
+      }
+
+      function formatStatus(status) {
+        switch (status) {
+          case 'success':
+            return '成功';
+          case 'error':
+            return 'エラー';
+          default:
+            return 'スキップ';
+        }
+      }
+
+      function formatSummary(summary) {
+        const safeSummary = summary || {};
+        return `総件数: ${safeSummary.total || 0} / 成功: ${safeSummary.success || 0} / スキップ: ${safeSummary.skipped || 0} / エラー: ${safeSummary.errors || 0}`;
+      }
+
+      function setStatus(message, type) {
+        if (!statusMessage) {
+          return;
+        }
+        statusMessage.textContent = message || '';
+        statusMessage.classList.remove('status--error', 'status--success');
+        if (type === 'error') {
+          statusMessage.classList.add('status--error');
+        } else if (type === 'success') {
+          statusMessage.classList.add('status--success');
+        }
+      }
+
+      function renderLogs(logs) {
+        if (!logPanel || !logList) {
+          return;
+        }
+
+        logList.innerHTML = '';
+        if (!logs.length) {
+          logPanel.hidden = true;
+          return;
+        }
+
+        logs.forEach((entry) => {
+          const normalized = normalizeLogEntry(entry);
+          if (!normalized.message) {
+            return;
+          }
+          const item = document.createElement('li');
+          item.className = 'execution-log__item';
+
+          if (normalized.level) {
+            const badge = document.createElement('span');
+            badge.className = `execution-log__badge ${normalized.level}`;
+            badge.textContent = formatLogLevel(normalized.level);
+            item.appendChild(badge);
+          }
+
+          const message = document.createElement('span');
+          message.textContent = normalized.message;
+          item.appendChild(message);
+
+          if (normalized.detail) {
+            const detail = document.createElement('div');
+            detail.textContent = normalized.detail;
+            detail.style.color = 'var(--muted)';
+            detail.style.marginTop = '2px';
+            item.appendChild(detail);
+          }
+
+          logList.appendChild(item);
+        });
+
+        logPanel.hidden = false;
+      }
+
+      function normalizeLogEntry(entry) {
+        if (typeof entry === 'string') {
+          return { level: 'info', message: entry, detail: '' };
+        }
+        if (!entry || typeof entry !== 'object') {
+          return { level: 'info', message: '', detail: '' };
+        }
+        return {
+          level: entry.level || 'info',
+          message: entry.message || '',
+          detail: entry.detail || '',
+        };
+      }
+
+      function formatLogLevel(level) {
+        switch (level) {
+          case 'success':
+            return '成功';
+          case 'error':
+            return 'エラー';
+          case 'warning':
+            return '警告';
+          default:
+            return '情報';
+        }
+      }
+
+      function setLoading(isLoading) {
+        if (!executeButton) {
+          return;
+        }
+        isProcessing = Boolean(isLoading);
+        executeButton.textContent = isLoading ? '実行中…' : '実行';
+        updateExecuteButtonDisabled();
+      }
+
+      function updateRowCount() {
+        if (!rowCountLabel || !tableBody) {
+          return;
+        }
+        rowCountLabel.textContent = `行数: ${tableBody.children.length}`;
+      }
+
+      function focusFirstInvalidField() {
+        if (lastValidationDetails.invalidSelects.length) {
+          lastValidationDetails.invalidSelects[0].focus();
+          return;
+        }
+        const firstIncomplete = lastValidationDetails.incompleteRows[0];
+        if (!firstIncomplete || !tableBody) {
+          return;
+        }
+        const targetColumn = firstIncomplete.missingColumns[0];
+        if (!targetColumn) {
+          return;
+        }
+        const targetRow = tableBody.querySelector(`tr[data-row-number="${firstIncomplete.rowNumber}"]`);
+        if (!targetRow) {
+          return;
+        }
+        const input = targetRow.querySelector(`[data-column-key="${targetColumn.key}"]`);
+        if (input) {
+          input.focus();
+        }
+      }
+
+      return root;
+    }
+
+    window.renderPromotionApplyApp = renderPromotionApplyApp;
+  })();
+</script>

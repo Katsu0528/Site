@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <base href="<?!= baseUrl ?>" target="_top" />
+    <meta charset="UTF-8" />
+    <title>OTONARI API ポータル</title>
+    <style>
+      :root {
+        --accent: #0052cc;
+        --accent-light: #e6f0ff;
+        --text: #1b1b1b;
+        --muted: #6b6b6b;
+        --bg: #f7f9fc;
+        --card-bg: #ffffff;
+        --border: #d9e2f3;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Noto Sans JP', system-ui, -apple-system, BlinkMacSystemFont,
+          'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .logo-image {
+        display: block;
+        height: 36px;
+        width: auto;
+      }
+
+      .logo-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.9rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border-radius: 16px;
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus {
+        color: var(--accent);
+        background: var(--accent-light);
+        outline: none;
+      }
+
+      .nav-links a[aria-current='page'] {
+        color: var(--accent);
+        background: var(--accent-light);
+        font-weight: 600;
+      }
+
+      main {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+        padding: 24px 32px;
+      }
+
+      section {
+        margin-bottom: 48px;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: 1.6rem;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.3rem;
+        color: var(--accent);
+      }
+
+      p.description {
+        margin: 0 0 24px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+
+      .media-register-card__app {
+        margin-top: 24px;
+      }
+
+      .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .category-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0 20px 16px;
+        box-shadow: 0 4px 10px rgba(15, 35, 95, 0.08);
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .category-card.expanded {
+        border-color: var(--accent);
+        box-shadow: 0 10px 18px rgba(15, 35, 95, 0.16);
+      }
+
+      .category-header {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text);
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+
+      .category-header:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+
+      .category-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 1.2rem;
+        transition: transform 0.2s ease;
+      }
+
+      .category-card.expanded .category-icon {
+        transform: rotate(45deg);
+      }
+
+      .category-content {
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+        display: none;
+      }
+
+      .category-card.expanded .category-content {
+        display: block;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 6px 12px rgba(15, 35, 95, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .ad-registration-card {
+        gap: 24px;
+      }
+
+      .ad-registration-section {
+        border-top: 1px solid var(--border);
+        padding-top: 20px;
+        margin-top: 4px;
+      }
+
+      .ad-registration-section--first {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+
+      .ad-registration-section__header {
+        margin-bottom: 12px;
+      }
+
+      .ad-registration-section__header h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+        color: var(--text);
+      }
+
+      .ad-registration-section__header p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .ad-registration-form__note {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .portal-card {
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+        position: relative;
+        padding-right: 48px;
+      }
+
+      .portal-card:hover,
+      .portal-card:focus {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 18px rgba(15, 35, 95, 0.16);
+        border-color: var(--accent);
+        outline: none;
+      }
+
+      .portal-card__cta {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--accent);
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .portal-card__cta::after {
+        content: '→';
+        font-size: 0.9rem;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text);
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: border 0.2s, box-shadow 0.2s;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15);
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 82, 204, 0.25);
+      }
+
+      button.secondary {
+        background: var(--accent-light);
+        color: var(--accent);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .result {
+        padding: 12px;
+        border-radius: 8px;
+        background: #f0f7ff;
+        border: 1px solid var(--border);
+        color: var(--text);
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+      }
+
+      .result.error {
+        background: #fff1f0;
+        border-color: #ffccc7;
+        color: #a8071a;
+      }
+
+      .result.loading {
+        background: #fffbe6;
+        border-color: #ffe58f;
+        color: #ad6800;
+      }
+
+      .process-trace__title {
+        margin-top: 8px;
+        margin-bottom: 4px;
+        font-weight: 700;
+        color: var(--text-light);
+      }
+
+      .process-trace {
+        margin: 0;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px dashed var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+
+      .debug-panel {
+        position: fixed;
+        inset: 16px 24px auto auto;
+        width: 320px;
+        max-width: 90vw;
+        max-height: calc(100vh - 96px);
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 30;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      .debug-panel.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .debug-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .debug-panel__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .debug-close {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      .debug-close:hover,
+      .debug-close:focus-visible {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .debug-panel__status {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .debug-log {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .debug-log__item {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: #f9fbff;
+      }
+
+      .debug-log__item .debug-log__headline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-weight: 700;
+      }
+
+      .debug-log__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 12px;
+        color: #fff;
+      }
+
+      .debug-log__badge.info {
+        background: #4b5563;
+      }
+
+      .debug-log__badge.running {
+        background: #2563eb;
+      }
+
+      .debug-log__badge.success {
+        background: #16a34a;
+      }
+
+      .debug-log__badge.error {
+        background: #dc2626;
+      }
+
+      .debug-log__time {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .debug-log__detail {
+        margin: 6px 0 0;
+        font-size: 0.9rem;
+        color: var(--text);
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .breadcrumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        color: var(--muted);
+      }
+
+      .breadcrumb a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover,
+      .breadcrumb a:focus {
+        text-decoration: underline;
+      }
+
+      .breadcrumb .separator {
+        color: var(--border);
+      }
+
+      #action-detail .card,
+      #contact-section .card,
+      #contact-section .description {
+        max-width: none;
+        width: 100%;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .nav-links {
+          width: 100%;
+        }
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body id="top">
+    <!-- ロゴとグループナビゲーション -->
+    <?
+      var defaultLogoUrl =
+        'data:image/png;base64,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' +
+        'np4/vVNsLy4Sd83wmrF+Rp8kTLIzB8mZktOYqw038hekNtKfpA/yfPMq8j7MjJ95KF8zX5R/YZbd' +
+        'rGWznhYEF/wyG5/Nm906x3TOwjkP5rLmbpuHzEuZ1zrffP7i+d0LQhbsXkhdmLnw90KnwjWFbxcl' +
+        'LGpabLR4weJHP4X8VFOkViQpurHEe8mWpfhS4dKOZWOWbVz2rZhffK7EqaS05Mty3vJzP4/+uezn' +
+        'gRWpKzpWuq3cvIq4SrTq+mq/1bvXaK4pWPNo7fi19euY64rXvV0/bf3ZUpfSLRuoG6QbusrCyxo3' +
+        'WmxctfFLeXr5tYqAiv2VhpXLKt9v4m+6vNl/c+0Woy0lWz5tFW69uS1kW32VVVXpduL2vO1PdsTv' +
+        'aP/F45fqnQY7S3Z+3SXa1bU7endbtXt19R7DPStr0BppTc/eyXsv7Qvc11jrULttP2N/yQFwQHrg' +
+        '+a/Jv14/GHaw9ZDHodrDlocr6+h1xfVI/az6vob0hq7GxMbOI+OOtDZ5N9X95vjbrmbT5oqjOkdX' +
+        'HqMeW3xs4HjB8f4WcUvvibQTj1qntd45OfHk1bYJbR2nwk6dOR18+mQ7q/34GZ8zzWe9zh4553Gu' +
+        '4bzb+foLrhfqfnf9va7DraP+ovvFxkuel5o6x3Yeu+x3+cSVwCunr3Kunr8Wca3zetz1mzcm3+i6' +
+        'yb/57FbWrVe3825/vrPgLuFu8T2Ne6X3De9X/WH7x/4ut66jDwIfXHgY8/DOI96jF49zHn/pXvyE' +
+        '9qT0qcnT6mfOz5p7gnsuPZ/0vPuF+MXn3qI/Nf+sfGnz8vBf/n9d6JvY1/1K8mrg9fI3+m92vXV5' +
+        '29of1X//Xfa7z++LP+h/2P3R42P7p4RPTz/P/EL6UvbV9mvTt7BvdweyBwbEXAlXvhXAYEVTUwF4' +
+        'vQvuExIBoMPzGXWS4vwnL4jizCpH4D9hxRlRXtwAqIWNbBvPbgHgAKxWC+DWHbayLXysP0DHjBmq' +
+        'g2c1+blSVojwHLDVXYau7Ni0AAwrijPnD3EPb4FM1QUMb/8Fs6J75Npfa6gAAACKZVhJZk1NACoA' +
+        'AAAIAAQBGgAFAAAAAQAAAD4BGwAFAAAAAQAAAEYBKAADAAAAAQACAACHaQAEAAAAAQAAAE4AAAAA' +
+        'AAAAkAAAAAEAAACQAAAAAQADkoYABwAAABIAAAB4oAIABAAAAAEAAAGSoAMABAAAAAEAAADAAAAA' +
+        'AEFTQ0lJAAAAU2NyZWVuc2hvdF+2YnYAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAHWaVRYdFhNTDpj' +
+        'b20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4Onht' +
+        'cHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53' +
+        'My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24g' +
+        'cmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20v' +
+        'ZXhpZi8xLjAvIj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjE5MjwvZXhpZjpQaXhl' +
+        'bFlEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj40MDI8L2V4aWY6UGl4' +
+        'ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpVc2VyQ29tbWVudD5TY3JlZW5zaG90PC9leGlm' +
+        'OlVzZXJDb21tZW50PgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6' +
+        'eG1wbWV0YT4K+Vn9rQAAABxpRE9UAAAAAgAAAAAAAABgAAAAKAAAAGAAAABgAAATXI6LSr8AABMo' +
+        'SURBVHgB7J13fFTF2scfpKYgoUgREFTgxSQgTSAIAoLyoveGqoYECEWKFIFQQhRCDR1CUYqEkhtE' +
+        'QAmhaDRIkxIghBog0ksAyaUpNYD6zux7N5/saXvOmd3Nhvt7/uDsmZlnZvabYX9n6sn3NzOCgQAI' +
+        'gAAIgIBJAvkgJCbJwQ0EQAAEQMBCAEKChgACIAACICBEAEIihA/OIAACIAACEBK0ARAAARAAASEC' +
+        'EBIhfHAGARAAARCAkKANgAAIgAAICBGAkAjhgzMIgAAIgACEBG0ABEAABEBAiACERAgfnEEABEAA' +
+        'BCAkaAMgAAIgAAJCBCAkQvjgDAIgAAIgACFBGwABEAABEBAiACERwgdnEAABEAABCAnaAAiAAAiA' +
+        'gBABCIkQPjiDAAiAAAhASNAGQAAEQAAEhAhASITwwRkEQAAEQABCgjYAAiAAAiAgRABCIoQPziAA' +
+        'AiAAAhAStAEQAAEQAAEhAhASIXxwBgEQAAEQgJCgDYAACIAACAgRgJAI4YMzCIAACIAAhARtAARA' +
+        'AARAQIgAhEQIH5xBAARAAAQgJGgDIAACIAACQgQgJEL44AwCIAACIAAhQRsAARAAARAQIgAhEcIH' +
+        'ZxAAARAAAQgJ2gAIgAAIgIAQAQiJED44gwAIgAAIQEjQBkAABEAABIQIQEiE8MEZBEAABEAAQoI2' +
+        'AAIgAAIgIEQAQiKED84gAAIgAAIQErQBEAABEAABIQIQEiF8cAYBEAABEICQoA2AAAiAAAgIEYCQ' +
+        'COGDMwiAAAiAAIQEbQAEQAAEQECIAIRECB+cQQAEQAAEICRoAyAAAiAAAkIEICRC+OAMAiAAAiAA' +
+        'IUEbAAEQAAEQECIAIRHCB2cQAAEQAAEICdoACIAACICAEAEIiRA+OIMACIAACEBI0AZAAARAAASE' +
+        'CEBIhPDBGQRAAARAAEKCNgACIAACICBEAEIihA/OIAACIAACEBK0ARAAARAAASECEBIhfHAGARAA' +
+        'ARCAkKANgAAIgAAICBGAkAjhgzMIgAAIgACEBG0ABEAABEBAiACERAgfnEEABEAABCAkaAMgAAIg' +
+        'AAJCBCAkQvjgDAIgAAIgACFBGwABEAABEBAiACERwgdnEAABEAABCAnaAAiAAAiAgBABCIkQPjiD' +
+        'AAiAAAg8M0KS9eQp7Tl5mn4+fJxOXblOmXf+oN8fPFT8C1evUI5ef7ki1av6Mr3pW5U8CxdSTJfX' +
+        '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' +
+        'AAAASUVORK5CYII=';
+      var headerLogoUrl = logoUrl || defaultLogoUrl;
+    ?>
+    <header>
+      <a class="logo" href="?" aria-label="トップページへ戻る">
+        <img class="logo-image" src="<?!= headerLogoUrl ?>" alt="OTONARI API ロゴ" />
+        <span>OTONARI API</span>
+      </a>
+      <nav class="nav-links" aria-label="機能グループ一覧">
+        <!-- JavaScriptでグループリンクを挿入 -->
+      </nav>
+    </header>
+
+    <aside id="debug-panel" class="debug-panel" hidden aria-live="polite">
+      <div class="debug-panel__header">
+        <div class="debug-panel__title">
+          <span aria-hidden="true">🛠️</span>
+          <span>デバッグモード</span>
+        </div>
+        <button type="button" id="debug-close" class="debug-close" aria-label="デバッグモードを閉じる">
+          閉じる
+        </button>
+      </div>
+      <div id="debug-status" class="debug-panel__status">右上のお問い合わせを5回クリックするとデバッグモードが開きます。</div>
+      <ol id="debug-log" class="debug-log"></ol>
+    </aside>
+
+    <main>
+      <section id="portal-section" hidden>
+        <h1>OTONARI API ポータル</h1>
+        <p class="description">
+          APIでOTONARI ASPの拡張機能を利用できます。
+        </p>
+        <div id="portal-group-container"></div>
+      </section>
+
+      <section id="action-section" hidden>
+        <div class="breadcrumb" aria-label="パンくずリスト">
+          <a href="?">ポータルトップ</a>
+          <span class="separator" aria-hidden="true">/</span>
+          <span id="breadcrumb-group">機能グループ</span>
+          <span class="separator" aria-hidden="true">/</span>
+          <span id="breadcrumb-current">機能詳細</span>
+        </div>
+        <div id="action-detail"></div>
+      </section>
+
+      <section id="contact-section" hidden>
+        <h1>お問い合わせ</h1>
+        <p class="description">
+          機能に関するご意見やご要望、その他お問い合せ等がございましたら、以下のフォームからお寄せください。担当者が内容を確認し、必要に応じて対応いたします。
+        </p>
+        <article class="card">
+          <form id="contact-form" novalidate>
+            <label for="contact-message">ご意見・ご要望</label>
+            <textarea
+              id="contact-message"
+              name="message"
+              placeholder="改善してほしい点や追加してほしい機能などをご記入ください"
+              required
+            ></textarea>
+            <div class="actions">
+              <button type="submit" class="primary" id="contact-submit">送信</button>
+            </div>
+          </form>
+          <div id="contact-result" class="result" hidden></div>
+        </article>
+      </section>
+    </main>
+
+    <?!= include('MediaRegisterApp'); ?>
+    <?!= include('PromotionApplyApp'); ?>
+
+    <script>
+      // ---- ここから差し替え ----
+
+      // サーバーから渡されたアクション定義（壊れていても落ちないように防御）
+      const RAW_ACTIONS = <?!= JSON.stringify(actionsJson || []) ?>;
+      const ACTION_DEFINITIONS = Array.isArray(RAW_ACTIONS) ? RAW_ACTIONS : [];
+      const ACTION_MAP = ACTION_DEFINITIONS.reduce((map, action) => {
+        if (action && action.id) {
+          map[action.id] = action;
+        }
+        return map;
+      }, {});
+      const AD_REGISTRATION_COOKIE_PREFIX = 'adRegForm.';
+      const AD_REGISTRATION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30日
+      const AD_REGISTRATION_SECTION_CONFIGS = [
+        {
+          actionId: 'registerPromotionItem',
+          title: '商品テーブル登録',
+          description:
+            '広告ID・商品名・URLを指定して商品テーブルにエントリを追加します。',
+          helperText: '最後に入力した値はブラウザに保存され、次回自動で復元されます。',
+          buttonLabel: '商品テーブルを登録',
+        },
+        {
+          actionId: 'summarizeConfirmedResultsByAffiliate',
+          title: '受領シート更新',
+          description:
+            '日付設定シートの期間に基づき確定成果を取得し、「受領」シートを更新します。',
+          helperText: '期間の変更はスプレッドシート側で行ってください。',
+          buttonLabel: '受領シートを更新',
+        },
+      ];
+
+      // サーバー側で埋め込んだ選択情報
+      const SERVER_SELECTED_ACTION_ID = <?!= JSON.stringify(selectedActionId || '') ?>;
+      const SERVER_SELECTED_VIEW = <?!= JSON.stringify(selectedView || '') ?>;
+
+      // クライアント側でも URL から保険的に拾う（本番環境でここが効きます）
+      const urlParams = new URLSearchParams(window.location.search);
+      const CLIENT_SELECTED_ACTION_ID = urlParams.get('action') || '';
+      const CLIENT_SELECTED_VIEW = urlParams.get('view') || '';
+
+      // サーバー値が優先、なければ URL から
+      const SELECTED_ACTION_ID =
+        SERVER_SELECTED_ACTION_ID || CLIENT_SELECTED_ACTION_ID;
+      const SELECTED_VIEW = SERVER_SELECTED_VIEW || CLIENT_SELECTED_VIEW;
+
+      const CONTACT_VIEW = 'contact';
+      const VIEW_TYPES = {
+        PORTAL: 'portal',
+        ACTION: 'action',
+      };
+      const initialPreferredView =
+        SELECTED_VIEW || (SELECTED_ACTION_ID ? VIEW_TYPES.ACTION : VIEW_TYPES.PORTAL);
+      const initialState = normalizeState({
+        view: initialPreferredView,
+        actionId: SELECTED_ACTION_ID,
+      });
+      let currentState = initialState;
+      const BASE_ABSOLUTE_URL = `${window.location.origin}${window.location.pathname}`;
+      const buildAbsoluteUrl = (params = null) => {
+        if (!params || (typeof params === 'object' && Object.keys(params).length === 0)) {
+          return BASE_ABSOLUTE_URL;
+        }
+        const searchParams = new URLSearchParams(params);
+        const query = searchParams.toString();
+        return query ? `${BASE_ABSOLUTE_URL}?${query}` : BASE_ABSOLUTE_URL;
+      };
+
+      // デバッグログ（必ずどのビューか分かる）
+      console.log('DEBUG_VIEW', {
+        ACTION_DEFINITIONS,
+        SERVER_SELECTED_ACTION_ID,
+        SERVER_SELECTED_VIEW,
+        CLIENT_SELECTED_ACTION_ID,
+        CLIENT_SELECTED_VIEW,
+        VIEW: initialState.view,
+      });
+
+      // ---- ここから下は元のまま ----
+
+      // グループごとの配列を作成（表示順を保つため reduce を使用）
+      const groupMap = ACTION_DEFINITIONS.reduce((map, action) => {
+        if (!map.has(action.group)) {
+          map.set(action.group, []);
+        }
+        map.get(action.group).push(action);
+        return map;
+      }, new Map());
+
+      const portalSection = document.getElementById('portal-section');
+      const portalGroupContainer = document.getElementById('portal-group-container');
+      const detailSection = document.getElementById('action-section');
+      const detailContainer = document.getElementById('action-detail');
+      const breadcrumbGroup = document.getElementById('breadcrumb-group');
+      const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+      const contactSection = document.getElementById('contact-section');
+      const contactForm = document.getElementById('contact-form');
+      const contactResult = document.getElementById('contact-result');
+      const contactSubmitButton = document.getElementById('contact-submit');
+      const nav = document.querySelector('.nav-links');
+      const logoLink = document.querySelector('.logo');
+      const breadcrumbHomeLink = document.querySelector('.breadcrumb a');
+      const debugPanel = document.getElementById('debug-panel');
+      const debugLogList = document.getElementById('debug-log');
+      const debugStatusText = document.getElementById('debug-status');
+      const debugCloseButton = document.getElementById('debug-close');
+
+      const DEBUG_ACTIVATION_TAPS = 5;
+      const DEBUG_RESET_MS = 3000;
+      const DEBUG_LOG_LIMIT = 50;
+      let debugPopupActivated = false;
+      let debugTapCount = 0;
+      let debugTapResetTimer = null;
+      let debugModeEnabled = false;
+      let debugActivationLogged = false;
+      const debugLogs = [];
+      const originalConsole = {
+        log: console.log.bind(console),
+        info: (console.info || console.log).bind(console),
+        warn: (console.warn || console.log).bind(console),
+        error: (console.error || console.log).bind(console),
+      };
+
+      if (logoLink) {
+        logoLink.href = buildAbsoluteUrl();
+        logoLink.addEventListener('click', (event) => {
+          handleNavigation(event, VIEW_TYPES.PORTAL);
+        });
+      }
+
+      if (breadcrumbHomeLink) {
+        breadcrumbHomeLink.href = buildAbsoluteUrl();
+        breadcrumbHomeLink.addEventListener('click', (event) => {
+          handleNavigation(event, VIEW_TYPES.PORTAL);
+        });
+      }
+
+      window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.view) {
+          setState(event.state, { syncHistory: false });
+          return;
+        }
+        setState(deriveStateFromLocation(), { syncHistory: false });
+      });
+
+      setState(currentState, { replaceHistory: true });
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', handleContactSubmit);
+      }
+
+      if (debugCloseButton) {
+        debugCloseButton.addEventListener('click', () => {
+          toggleDebugMode(false);
+        });
+      }
+
+      wrapConsoleForDebug();
+
+      function handleContactDebugTap() {
+        debugTapCount += 1;
+        resetDebugTapCounter();
+        if (debugTapCount >= DEBUG_ACTIVATION_TAPS) {
+          debugTapCount = 0;
+          debugPopupActivated = true;
+          toggleDebugMode(true);
+          if (!debugActivationLogged) {
+            addDebugLog(
+              'デバッグモードを有効化しました',
+              'info',
+              'ファンクションポイントの実行結果を追跡します。'
+            );
+            debugActivationLogged = true;
+          }
+        }
+      }
+
+      function resetDebugTapCounter() {
+        if (debugTapResetTimer) {
+          clearTimeout(debugTapResetTimer);
+        }
+        debugTapResetTimer = setTimeout(() => {
+          debugTapCount = 0;
+        }, DEBUG_RESET_MS);
+      }
+
+      function toggleDebugMode(enable) {
+        debugModeEnabled = Boolean(enable) && debugPopupActivated;
+        document.body.classList.toggle('debug-mode', debugModeEnabled);
+        if (debugPanel) {
+          debugPanel.hidden = !debugModeEnabled;
+          debugPanel.classList.toggle('is-visible', debugModeEnabled);
+        }
+        if (debugStatusText) {
+          debugStatusText.textContent = debugModeEnabled
+            ? 'ファンクションポイントの実行状況を表示中です。'
+            : 'デバッグモードを無効化しました。';
+        }
+        if (debugModeEnabled) {
+          ensureDebugPanelVisible();
+          renderDebugLog();
+        }
+      }
+
+      function addDebugLog(title, status, detail) {
+        const entry = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          title,
+          status: status || 'info',
+          detail: detail || '',
+          timestamp: new Date(),
+        };
+        debugLogs.unshift(entry);
+        if (debugLogs.length > DEBUG_LOG_LIMIT) {
+          debugLogs.pop();
+        }
+        if (debugModeEnabled) {
+          ensureDebugPanelVisible();
+          renderDebugLog();
+        }
+        return entry.id;
+      }
+
+      function updateDebugLog(entryId, overrides) {
+        const target = debugLogs.find((item) => item.id === entryId);
+        if (!target) {
+          return;
+        }
+        Object.assign(target, overrides || {});
+        if (debugModeEnabled) {
+          ensureDebugPanelVisible();
+          renderDebugLog();
+        }
+      }
+
+      function renderDebugLog() {
+        if (!debugLogList) {
+          return;
+        }
+        debugLogList.innerHTML = '';
+        debugLogs.forEach((entry) => {
+          const item = document.createElement('li');
+          item.className = 'debug-log__item';
+
+          const header = document.createElement('div');
+          header.className = 'debug-log__headline';
+
+          const title = document.createElement('span');
+          title.textContent = entry.title;
+          header.appendChild(title);
+
+          const badge = document.createElement('span');
+          badge.className = `debug-log__badge ${entry.status}`;
+          switch (entry.status) {
+            case 'running':
+              badge.textContent = '実行中';
+              break;
+            case 'success':
+              badge.textContent = '成功';
+              break;
+            case 'error':
+              badge.textContent = '失敗';
+              break;
+            default:
+              badge.textContent = '情報';
+          }
+          header.appendChild(badge);
+
+          const time = document.createElement('span');
+          time.className = 'debug-log__time';
+          time.textContent = formatDebugTimestamp(entry.timestamp);
+          header.appendChild(time);
+
+          item.appendChild(header);
+
+          if (entry.detail) {
+            const detail = document.createElement('div');
+            detail.className = 'debug-log__detail';
+            detail.textContent = entry.detail;
+            item.appendChild(detail);
+          }
+
+          debugLogList.appendChild(item);
+        });
+      }
+
+      function ensureDebugPanelVisible() {
+        if (!debugModeEnabled || !debugPanel) {
+          return;
+        }
+        document.body.classList.add('debug-mode');
+        debugPanel.hidden = false;
+        debugPanel.classList.add('is-visible');
+        if (typeof debugPanel.scrollIntoView === 'function') {
+          debugPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      function wrapConsoleForDebug() {
+        ['log', 'info', 'warn', 'error'].forEach((methodName) => {
+          const original = originalConsole[methodName];
+          if (typeof original !== 'function') {
+            return;
+          }
+          console[methodName] = (...args) => {
+            original(...args);
+            if (!debugModeEnabled) {
+              return;
+            }
+            const status = methodName === 'error' ? 'error' : 'info';
+            const formatted = formatConsoleArguments(args);
+            addDebugLog(`コンソール出力（${methodName}）`, status, formatted);
+          };
+        });
+      }
+
+      function formatConsoleArguments(args) {
+        if (!args || !args.length) {
+          return 'メッセージなし';
+        }
+        return args
+          .map((value) => {
+            if (typeof value === 'string') {
+              return value;
+            }
+            if (value instanceof Error && value.message) {
+              return `Error: ${value.message}`;
+            }
+            try {
+              return JSON.stringify(value);
+            } catch (e) {
+              return String(value);
+            }
+          })
+          .join(' ');
+      }
+
+      function createProcessTrace(label) {
+        const lines = [];
+        const add = (message) => {
+          if (!debugModeEnabled) {
+            return;
+          }
+          const timestamp = formatDebugTimestamp(new Date());
+          lines.push(timestamp ? `[${timestamp}] ${message}` : message);
+        };
+        const addError = (error) => {
+          if (!debugModeEnabled) {
+            return;
+          }
+          const detail = error && error.stack
+            ? error.stack
+            : error && error.message
+              ? error.message
+              : String(error || '原因不明のエラー');
+          add(`エラー詳細: ${detail}`);
+        };
+        const toText = () =>
+          lines.length
+            ? `${label ? `${label}\n` : ''}${lines.join('\n')}`
+            : '';
+        return { add, addError, toText };
+      }
+
+      function normalizeActionResponse(response) {
+        if (
+          response &&
+          typeof response === 'object' &&
+          'result' in response &&
+          'logs' in response
+        ) {
+          return {
+            result: response.result,
+            logs: Array.isArray(response.logs) ? response.logs : [],
+          };
+        }
+
+        return { result: response, logs: [] };
+      }
+
+      function normalizeServerLogEntry(entry) {
+        if (!entry) {
+          return null;
+        }
+        if (typeof entry === 'string') {
+          return { level: 'info', message: entry };
+        }
+        if (typeof entry !== 'object') {
+          return null;
+        }
+        const level = entry.level || 'info';
+        const message = entry.message || '';
+        if (!message) {
+          return null;
+        }
+        return { level, message };
+      }
+
+      function formatServerLogs(logs) {
+        if (!Array.isArray(logs)) {
+          return '';
+        }
+        const normalized = logs
+          .map((entry) => normalizeServerLogEntry(entry))
+          .filter(Boolean);
+        if (!normalized.length) {
+          return '';
+        }
+        return normalized
+          .map((log) => `${log.level ? `[${log.level.toUpperCase()}] ` : ''}${log.message}`)
+          .join('\n');
+      }
+
+      function renderResultWithTrace(resultBox, message, statusClass, processTraceText, serverLogs) {
+        if (!resultBox) {
+          return;
+        }
+        resultBox.innerHTML = '';
+
+        const messageNode = document.createElement('div');
+        messageNode.textContent = message;
+        resultBox.appendChild(messageNode);
+
+        const serverLogText = formatServerLogs(serverLogs);
+        if (serverLogText) {
+          const logTitle = document.createElement('div');
+          logTitle.className = 'process-trace__title';
+          logTitle.textContent = '実行ログ';
+          const logTrace = document.createElement('pre');
+          logTrace.className = 'process-trace';
+          logTrace.textContent = serverLogText;
+          resultBox.appendChild(logTitle);
+          resultBox.appendChild(logTrace);
+        }
+
+        if (debugModeEnabled && processTraceText) {
+          const traceTitle = document.createElement('div');
+          traceTitle.className = 'process-trace__title';
+          traceTitle.textContent = 'デバッグログ';
+          const trace = document.createElement('pre');
+          trace.className = 'process-trace';
+          trace.textContent = processTraceText;
+          resultBox.appendChild(traceTitle);
+          resultBox.appendChild(trace);
+        }
+
+        resultBox.className = `result${statusClass ? ` ${statusClass}` : ''}`;
+        resultBox.hidden = false;
+      }
+
+      function buildFormLabelMap(form) {
+        const labelMap = new Map();
+        if (!form) {
+          return labelMap;
+        }
+        form.querySelectorAll('label[for]').forEach((label) => {
+          const key = label.getAttribute('for');
+          if (key) {
+            labelMap.set(key, label.textContent.trim());
+          }
+        });
+        return labelMap;
+      }
+
+      function describeRequestPayload(form, payload) {
+        if (!payload || typeof payload !== 'object') {
+          return '送信データなし。';
+        }
+        const labelMap = buildFormLabelMap(form);
+        const prefix = form && form.dataset && form.dataset.actionId
+          ? `${form.dataset.actionId}-`
+          : '';
+        const lines = Object.entries(payload).map(([key, value]) => {
+          const candidates = [`${prefix}${key}`, key];
+          const labelText = candidates.map((candidate) => labelMap.get(candidate)).find(Boolean);
+          const fieldLabel = labelText ? `${labelText} (${key})` : key;
+          const displayValue = value === '' ? '(空欄)' : String(value);
+          return `・${fieldLabel}: ${displayValue}`;
+        });
+        if (!lines.length) {
+          return '送信データなし。';
+        }
+        return `リクエスト内容\n${lines.join('\n')}`;
+      }
+
+      function formatDebugTimestamp(date) {
+        if (!(date instanceof Date)) {
+          return '';
+        }
+        return [
+          date.getHours().toString().padStart(2, '0'),
+          date.getMinutes().toString().padStart(2, '0'),
+          date.getSeconds().toString().padStart(2, '0'),
+        ].join(':');
+      }
+
+      function renderNavigation() {
+        const baseLinks = [
+          { label: 'ポータルトップ', href: buildAbsoluteUrl(), view: 'portal' },
+          {
+            label: 'お問い合わせ',
+            href: buildAbsoluteUrl({ view: CONTACT_VIEW }),
+            view: CONTACT_VIEW,
+          },
+        ];
+
+        nav.innerHTML = '';
+
+        baseLinks.forEach((link) => {
+          const anchor = document.createElement('a');
+          anchor.href = link.href;
+          anchor.textContent = link.label;
+          if (currentState.view === link.view) {
+            anchor.setAttribute('aria-current', 'page');
+          }
+          if (link.external) {
+            anchor.target = '_top';
+            anchor.rel = 'noopener';
+          } else {
+            anchor.addEventListener('click', (event) => {
+              if (link.view === CONTACT_VIEW) {
+                handleContactDebugTap();
+              }
+              handleNavigation(event, link.view);
+            });
+          }
+          nav.appendChild(anchor);
+        });
+      }
+
+      function renderPortal() {
+        hideAllSections();
+        portalSection.hidden = false;
+        document.title = 'OTONARI API ポータル';
+        portalGroupContainer.innerHTML = '';
+        const groupEntries = Array.from(groupMap.entries());
+        const categoryList = document.createElement('div');
+        categoryList.className = 'category-list';
+
+        groupEntries.forEach(([groupName, actions], index) => {
+          const sectionId = `group-${groupName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+          const contentId = `${sectionId}-content`;
+          const card = document.createElement('article');
+          card.className = 'category-card';
+
+          const header = document.createElement('button');
+          header.type = 'button';
+          header.className = 'category-header';
+          header.setAttribute('aria-controls', contentId);
+          header.setAttribute('aria-expanded', 'false');
+
+          const headingText = document.createElement('span');
+          headingText.textContent = groupName;
+          header.appendChild(headingText);
+
+          const icon = document.createElement('span');
+          icon.className = 'category-icon';
+          icon.setAttribute('aria-hidden', 'true');
+          icon.textContent = '+';
+          header.appendChild(icon);
+
+          const content = document.createElement('div');
+          content.className = 'category-content';
+          content.id = contentId;
+          content.hidden = true;
+
+          const grid = document.createElement('div');
+          grid.className = 'card-grid';
+          actions.forEach((action) => {
+            grid.appendChild(createPortalCard(action));
+          });
+          content.appendChild(grid);
+
+          const toggleCategory = () => {
+            const expanded = header.getAttribute('aria-expanded') === 'true';
+            header.setAttribute('aria-expanded', String(!expanded));
+            content.hidden = expanded;
+            card.classList.toggle('expanded', !expanded);
+          };
+
+          header.addEventListener('click', toggleCategory);
+
+          if (index === 0) {
+            header.setAttribute('aria-expanded', 'true');
+            content.hidden = false;
+            card.classList.add('expanded');
+          }
+
+          card.appendChild(header);
+          card.appendChild(content);
+          categoryList.appendChild(card);
+        });
+
+        portalGroupContainer.appendChild(categoryList);
+      }
+
+      function renderActionDetail(action) {
+        hideAllSections();
+        detailSection.hidden = false;
+        detailContainer.innerHTML = '';
+        if (breadcrumbGroup) {
+          breadcrumbGroup.textContent = action.group || '機能グループ';
+        }
+        breadcrumbCurrent.textContent = action.name;
+        detailContainer.appendChild(createActionCard(action));
+        document.title = `${action.name} | OTONARI API`;
+      }
+
+      function renderContact() {
+        hideAllSections();
+        contactSection.hidden = false;
+        document.title = 'お問い合わせ | OTONARI API';
+      }
+
+      function renderMissingAction() {
+        hideAllSections();
+        detailSection.hidden = false;
+        detailContainer.innerHTML = '';
+        if (breadcrumbGroup) {
+          breadcrumbGroup.textContent = '機能グループ';
+        }
+        breadcrumbCurrent.textContent = '機能詳細';
+        const info = document.createElement('div');
+        info.className = 'card';
+        const title = document.createElement('h3');
+        title.textContent = '指定された機能が見つかりません';
+        const message = document.createElement('p');
+        message.textContent = 'URL を確認し、再度アクセスしてください。';
+        info.appendChild(title);
+        info.appendChild(message);
+        detailContainer.appendChild(info);
+      }
+
+      /**
+       * アクションカードを生成するヘルパー関数
+       * @param {Object} action - アクション定義
+       * @returns {HTMLElement}
+       */
+      function createActionCard(action) {
+        if (action && action.id === 'adcore') {
+          return createAdRegistrationCard(action);
+        }
+        if (action && action.id === 'registerMedia') {
+          return createMediaRegisterCard(action);
+        }
+        if (action && action.id === 'promotionApplySheet') {
+          return createPromotionApplyCard(action);
+        }
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.setAttribute('data-action-id', action.id);
+
+        const title = document.createElement('h3');
+        title.textContent = action.name;
+        card.appendChild(title);
+
+        const description = document.createElement('p');
+        description.textContent = action.description;
+        card.appendChild(description);
+
+        // フォーム要素を作成
+        const form = document.createElement('form');
+        form.className = 'action-form';
+
+        action.fields.forEach((field) => {
+          const wrapper = document.createElement('div');
+
+          const label = document.createElement('label');
+          label.htmlFor = `${action.id}-${field.id}`;
+          label.textContent = field.label;
+          wrapper.appendChild(label);
+
+          const input = field.type === 'textarea'
+            ? document.createElement('textarea')
+            : document.createElement('input');
+
+          input.id = `${action.id}-${field.id}`;
+          input.name = field.id;
+          input.placeholder = field.placeholder || '';
+          input.required = !field.optional;
+          input.autocomplete = 'off';
+          if (field.type && field.type !== 'textarea') {
+            input.type = field.type;
+          }
+
+          wrapper.appendChild(input);
+          form.appendChild(wrapper);
+        });
+
+        const actionButtons = document.createElement('div');
+        actionButtons.className = 'actions';
+
+        const submit = document.createElement('button');
+        submit.type = 'submit';
+        submit.className = 'primary';
+        submit.textContent = '実行';
+        actionButtons.appendChild(submit);
+
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'secondary';
+        reset.textContent = '入力をクリア';
+        reset.addEventListener('click', () => {
+          form.reset();
+          resultBox.innerHTML = '';
+          resultBox.className = 'result';
+          resultBox.hidden = true;
+        });
+        actionButtons.appendChild(reset);
+
+        form.appendChild(actionButtons);
+
+        const resultBox = document.createElement('div');
+        resultBox.className = 'result';
+        resultBox.hidden = true;
+
+        // フォーム送信時の処理
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          handleActionSubmit(action, form, submit, resultBox);
+        });
+
+        card.appendChild(form);
+        card.appendChild(resultBox);
+
+        return card;
+      }
+
+      function createMediaRegisterCard(action) {
+        const card = document.createElement('article');
+        card.className = 'card media-register-card';
+        card.setAttribute('data-action-id', action.id);
+
+        const title = document.createElement('h3');
+        title.textContent = action.name;
+        card.appendChild(title);
+
+        const description = document.createElement('p');
+        description.textContent = action.description;
+        card.appendChild(description);
+
+        const appContainer = document.createElement('div');
+        appContainer.className = 'media-register-card__app';
+        card.appendChild(appContainer);
+
+        if (typeof window.renderMediaRegisterApp === 'function') {
+          window.renderMediaRegisterApp(appContainer, {
+            portalUrl: buildAbsoluteUrl(),
+            showBackLink: false,
+            showHeader: false,
+            mode: 'inline',
+          });
+        } else {
+          const fallback = document.createElement('p');
+          fallback.className = 'result error';
+          fallback.textContent = 'メディア登録フォームを読み込めませんでした。';
+          appContainer.appendChild(fallback);
+        }
+
+        return card;
+      }
+
+      function createPromotionApplyCard(action) {
+        const card = document.createElement('article');
+        card.className = 'card media-register-card';
+        card.setAttribute('data-action-id', action.id);
+
+        const title = document.createElement('h3');
+        title.textContent = action.name;
+        card.appendChild(title);
+
+        const description = document.createElement('p');
+        description.textContent = action.description;
+        card.appendChild(description);
+
+        const appContainer = document.createElement('div');
+        appContainer.className = 'media-register-card__app';
+        card.appendChild(appContainer);
+
+        if (typeof window.renderPromotionApplyApp === 'function') {
+          window.renderPromotionApplyApp(appContainer, {
+            portalUrl: buildAbsoluteUrl({ view: 'promotion-apply' }),
+            showBackLink: false,
+            showHeader: false,
+            mode: 'inline',
+          });
+        } else {
+          const fallback = document.createElement('p');
+          fallback.className = 'result error';
+          fallback.textContent = '提携申請フォームを読み込めませんでした。';
+          appContainer.appendChild(fallback);
+        }
+
+        return card;
+      }
+
+      function createAdRegistrationCard(action) {
+        const card = document.createElement('article');
+        card.className = 'card ad-registration-card';
+        card.setAttribute('data-action-id', action.id);
+
+        const title = document.createElement('h3');
+        title.textContent = action.name || '広告登録';
+        card.appendChild(title);
+
+        const description = document.createElement('p');
+        description.textContent =
+          action.description ||
+          '広告登録フローの実行と関連する個別タスクをまとめて操作できます。';
+        card.appendChild(description);
+
+        AD_REGISTRATION_SECTION_CONFIGS.forEach((config, index) => {
+          const section = createAdRegistrationSection(config, index === 0);
+          if (section) {
+            card.appendChild(section);
+          }
+        });
+
+        return card;
+      }
+
+      function createAdRegistrationSection(config, isFirstSection) {
+        if (!config || !config.actionId) {
+          return null;
+        }
+
+        const actionDef = ACTION_MAP[config.actionId];
+        if (!actionDef) {
+          console.warn('Missing action definition for ad registration section', config.actionId);
+          return null;
+        }
+
+        const section = document.createElement('section');
+        section.className = 'ad-registration-section';
+        if (isFirstSection) {
+          section.classList.add('ad-registration-section--first');
+        }
+
+        const header = document.createElement('div');
+        header.className = 'ad-registration-section__header';
+
+        const heading = document.createElement('h4');
+        heading.textContent = config.title || actionDef.name || 'タスク';
+        header.appendChild(heading);
+
+        const helper = document.createElement('p');
+        helper.textContent = config.description || actionDef.description || '';
+        header.appendChild(helper);
+
+        section.appendChild(header);
+
+        const form = document.createElement('form');
+        form.className = 'action-form ad-registration-form';
+        form.dataset.actionId = actionDef.id;
+
+        const fields = Array.isArray(actionDef.fields) ? actionDef.fields : [];
+
+        fields.forEach((field) => {
+          const wrapper = document.createElement('div');
+
+          const label = document.createElement('label');
+          label.htmlFor = `${actionDef.id}-${field.id}`;
+          label.textContent = field.label;
+          wrapper.appendChild(label);
+
+          const input = field.type === 'textarea'
+            ? document.createElement('textarea')
+            : document.createElement('input');
+
+          input.id = `${actionDef.id}-${field.id}`;
+          input.name = field.id;
+          input.placeholder = field.placeholder || '';
+          input.required = !field.optional;
+          input.autocomplete = 'off';
+          if (field.type && field.type !== 'textarea') {
+            input.type = field.type;
+          }
+
+          wrapper.appendChild(input);
+          form.appendChild(wrapper);
+        });
+
+        if (config.helperText) {
+          const note = document.createElement('p');
+          note.className = 'ad-registration-form__note';
+          note.textContent = config.helperText;
+          form.appendChild(note);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const submit = document.createElement('button');
+        submit.type = 'submit';
+        submit.className = 'primary';
+        submit.textContent = config.buttonLabel || '実行';
+        actions.appendChild(submit);
+
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'secondary';
+        reset.textContent = '入力をクリア';
+        actions.appendChild(reset);
+
+        form.appendChild(actions);
+
+        const resultBox = document.createElement('div');
+        resultBox.className = 'result';
+        resultBox.hidden = true;
+
+        section.appendChild(form);
+        section.appendChild(resultBox);
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          handleActionSubmit(actionDef, form, submit, resultBox);
+        });
+
+        reset.addEventListener('click', () => {
+          form.reset();
+          resultBox.textContent = '';
+          resultBox.className = 'result';
+          resultBox.hidden = true;
+          clearAdRegistrationFormValues(actionDef.id);
+        });
+
+        const shouldPersist = fields.length > 0;
+        if (shouldPersist) {
+          restoreAdRegistrationFormValues(form, actionDef.id);
+          form.addEventListener('input', () => {
+            persistAdRegistrationFormValues(form, actionDef.id);
+          });
+        }
+
+        return section;
+      }
+
+      function persistAdRegistrationFormValues(form, actionId) {
+        if (!form || !actionId) {
+          return;
+        }
+        const data = {};
+        const elements = Array.from(form.elements || []);
+        elements.forEach((element) => {
+          if (!element.name || element.type === 'submit' || element.type === 'button') {
+            return;
+          }
+          data[element.name] = element.value || '';
+        });
+        setCookie(
+          `${AD_REGISTRATION_COOKIE_PREFIX}${actionId}`,
+          JSON.stringify(data),
+          AD_REGISTRATION_COOKIE_MAX_AGE,
+        );
+      }
+
+      function restoreAdRegistrationFormValues(form, actionId) {
+        if (!form || !actionId) {
+          return;
+        }
+        const rawValue = getCookie(`${AD_REGISTRATION_COOKIE_PREFIX}${actionId}`);
+        if (!rawValue) {
+          return;
+        }
+        try {
+          const data = JSON.parse(rawValue);
+          const elements = Array.from(form.elements || []);
+          elements.forEach((element) => {
+            if (!element.name || !(element.name in data)) {
+              return;
+            }
+            element.value = data[element.name] || '';
+          });
+        } catch (error) {
+          console.warn('Failed to restore saved form values', error);
+        }
+      }
+
+      function clearAdRegistrationFormValues(actionId) {
+        if (!actionId) {
+          return;
+        }
+        deleteCookie(`${AD_REGISTRATION_COOKIE_PREFIX}${actionId}`);
+      }
+
+      function setCookie(name, value, maxAgeSeconds) {
+        if (!name) {
+          return;
+        }
+        const encodedValue = encodeURIComponent(value);
+        const maxAge = typeof maxAgeSeconds === 'number' ? `; max-age=${maxAgeSeconds}` : '';
+        document.cookie = `${name}=${encodedValue}; path=/${maxAge}`;
+      }
+
+      function getCookie(name) {
+        if (!name || !document.cookie) {
+          return '';
+        }
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i += 1) {
+          const part = cookies[i].trim();
+          if (!part) {
+            continue;
+          }
+          const separatorIndex = part.indexOf('=');
+          if (separatorIndex === -1) {
+            continue;
+          }
+          const key = part.substring(0, separatorIndex);
+          if (key !== name) {
+            continue;
+          }
+          return decodeURIComponent(part.substring(separatorIndex + 1));
+        }
+        return '';
+      }
+
+      function deleteCookie(name) {
+        if (!name) {
+          return;
+        }
+        document.cookie = `${name}=; path=/; max-age=0`;
+      }
+
+      function createPortalCard(action) {
+        const link = document.createElement('a');
+        link.className = 'card portal-card';
+        link.href = buildAbsoluteUrl({ action: action.id });
+        link.setAttribute('aria-label', `${action.name}の詳細ページへ移動`);
+        link.addEventListener('click', (event) => {
+          if (event) {
+            event.preventDefault();
+          }
+          navigateToAction(action.id);
+        });
+
+        const title = document.createElement('h3');
+        title.textContent = action.name;
+        link.appendChild(title);
+
+        const description = document.createElement('p');
+        description.textContent = action.description;
+        link.appendChild(description);
+
+        const cta = document.createElement('span');
+        cta.className = 'portal-card__cta';
+        cta.textContent = '機能詳細へ';
+        link.appendChild(cta);
+
+        return link;
+      }
+
+      function handleNavigation(event, targetView) {
+        if (event) {
+          event.preventDefault();
+        }
+        if (targetView === CONTACT_VIEW) {
+          navigateToContact();
+          return;
+        }
+        navigateToPortal();
+      }
+
+      function navigateToPortal(options = {}) {
+        setState(
+          {
+            view: VIEW_TYPES.PORTAL,
+            actionId: '',
+          },
+          options
+        );
+      }
+
+      function navigateToContact(options = {}) {
+        setState(
+          {
+            view: CONTACT_VIEW,
+            actionId: '',
+          },
+          options
+        );
+      }
+
+      function navigateToAction(actionId, options = {}) {
+        setState(
+          {
+            view: VIEW_TYPES.ACTION,
+            actionId: actionId || '',
+          },
+          options
+        );
+      }
+
+      function hideAllSections() {
+        portalSection.hidden = true;
+        detailSection.hidden = true;
+        contactSection.hidden = true;
+      }
+
+      function setState(newState, { replaceHistory = false, syncHistory = true } = {}) {
+        const normalized = normalizeState(newState);
+        const stateChanged =
+          !currentState ||
+          currentState.view !== normalized.view ||
+          currentState.actionId !== normalized.actionId;
+        currentState = normalized;
+        renderCurrentView();
+        if (!syncHistory) {
+          return;
+        }
+        const shouldUpdateHistory = stateChanged || replaceHistory;
+        if (!shouldUpdateHistory) {
+          return;
+        }
+        const params = getUrlParamsFromState(currentState);
+        const nextUrl = buildAbsoluteUrl(params);
+        const method = replaceHistory ? 'replaceState' : 'pushState';
+        if (window.history && typeof window.history[method] === 'function') {
+          window.history[method](currentState, '', nextUrl);
+        } else if (!replaceHistory) {
+          window.location.assign(nextUrl);
+        } else {
+          window.location.replace(nextUrl);
+        }
+      }
+
+      function normalizeState(state) {
+        const desiredView = state.view === CONTACT_VIEW
+          ? CONTACT_VIEW
+          : state.view === VIEW_TYPES.ACTION
+            ? VIEW_TYPES.ACTION
+            : VIEW_TYPES.PORTAL;
+        if (desiredView === CONTACT_VIEW) {
+          return { view: CONTACT_VIEW, actionId: '' };
+        }
+        if (desiredView === VIEW_TYPES.ACTION && state.actionId) {
+          return { view: VIEW_TYPES.ACTION, actionId: state.actionId };
+        }
+        return { view: VIEW_TYPES.PORTAL, actionId: '' };
+      }
+
+      function getUrlParamsFromState(state) {
+        if (state.view === CONTACT_VIEW) {
+          return { view: CONTACT_VIEW };
+        }
+        if (state.view === VIEW_TYPES.ACTION && state.actionId) {
+          return { action: state.actionId };
+        }
+        return {};
+      }
+
+      function renderCurrentView() {
+        renderNavigation();
+        if (currentState.view === CONTACT_VIEW) {
+          renderContact();
+          return;
+        }
+        if (currentState.view === VIEW_TYPES.ACTION) {
+          const targetAction = ACTION_DEFINITIONS.find(
+            (action) => action.id === currentState.actionId
+          );
+          if (targetAction) {
+            renderActionDetail(targetAction);
+          } else {
+            renderMissingAction();
+          }
+          return;
+        }
+        renderPortal();
+      }
+
+      function deriveStateFromLocation() {
+        const params = new URLSearchParams(window.location.search);
+        const actionId = params.get('action') || '';
+        const viewParam = params.get('view') || '';
+        const desiredView = viewParam === CONTACT_VIEW
+          ? CONTACT_VIEW
+          : actionId
+            ? VIEW_TYPES.ACTION
+            : VIEW_TYPES.PORTAL;
+        return normalizeState({ view: desiredView, actionId });
+      }
+
+      /**
+       * フォーム送信を処理してサーバー側の関数を呼び出します。
+       * @param {Object} action - 実行対象のアクション
+       * @param {HTMLFormElement} form - 入力フォーム
+       * @param {HTMLButtonElement} submitButton - 実行ボタン
+       * @param {HTMLElement} resultBox - 実行結果表示領域
+       */
+      function handleActionSubmit(action, form, submitButton, resultBox) {
+        const formData = new FormData(form);
+        const payload = {};
+        formData.forEach((value, key) => {
+          payload[key] = value.trim();
+        });
+
+        const actionLabel = action && (action.name || action.id)
+          ? action.name || action.id
+          : '未定義のアクション';
+        const processTrace = createProcessTrace(`${actionLabel} の実行ログ`);
+        processTrace.add('フォーム入力を読み込みました。');
+        const requestDetail = describeRequestPayload(form, payload);
+        processTrace.add('送信データの整形が完了しました。');
+        const debugEntryId = addDebugLog(
+          `${actionLabel} を開始`,
+          'running',
+          requestDetail
+        );
+
+        ensureDebugPanelVisible();
+
+        submitButton.disabled = true;
+        renderResultWithTrace(resultBox, '処理を実行しています…', 'loading');
+        processTrace.add('サーバーへのリクエストを送信しました。');
+
+        google.script.run
+          .withSuccessHandler((response) => {
+            submitButton.disabled = false;
+            const normalizedResponse = normalizeActionResponse(response);
+            const text = formatResult(normalizedResponse.result);
+            const serverLogText = formatServerLogs(normalizedResponse.logs);
+            processTrace.add('サーバー応答を受信しました。');
+            renderResultWithTrace(
+              resultBox,
+              text,
+              '',
+              processTrace.toText(),
+              normalizedResponse.logs,
+            );
+            updateDebugLog(debugEntryId, {
+              title: `${actionLabel} が完了しました`,
+              status: 'success',
+              detail: `${requestDetail}\nサーバー応答\n${text}${
+                serverLogText ? `\n\nサーバーログ\n${serverLogText}` : ''
+              }\n\nプロセスログ\n${processTrace.toText() || 'ログなし'}`,
+            });
+          })
+          .withFailureHandler((error) => {
+            submitButton.disabled = false;
+            const errorMessage = `エラーが発生しました\n${error.message || error}`;
+            processTrace.addError(error);
+            renderResultWithTrace(resultBox, errorMessage, 'error', processTrace.toText());
+            updateDebugLog(debugEntryId, {
+              title: `${actionLabel} でエラーが発生しました`,
+              status: 'error',
+              detail: `${requestDetail}\nエラーメッセージ\n${
+                error && error.message ? error.message : String(error)
+              }\n\nプロセスログ\n${processTrace.toText() || 'ログなし'}`,
+            });
+          })
+          .runWebAction(action.id, payload);
+      }
+
+      function handleContactSubmit(event) {
+        event.preventDefault();
+        if (!contactForm || !contactResult || !contactSubmitButton) {
+          return;
+        }
+
+        const messageInput = contactForm.elements ? contactForm.elements['message'] : null;
+        const message = messageInput ? messageInput.value.trim() : '';
+        if (!message) {
+          contactResult.hidden = false;
+          contactResult.className = 'result error';
+          contactResult.textContent = 'ご意見・ご要望を入力してください。';
+          return;
+        }
+
+        const contactDebugId = addDebugLog(
+          'お問い合わせを送信',
+          'running',
+          'メッセージを送信しています。'
+        );
+
+        const contactTrace = createProcessTrace('お問い合わせ送信ログ');
+        contactTrace.add('お問い合わせ内容の送信を開始しました。');
+
+        contactSubmitButton.disabled = true;
+        renderResultWithTrace(contactResult, '送信しています…', 'loading');
+
+        google.script.run
+          .withSuccessHandler((response) => {
+            contactSubmitButton.disabled = false;
+            contactTrace.add('サーバー応答を受信しました。');
+            const resultText = response || '送信が完了しました。';
+            renderResultWithTrace(contactResult, resultText, '', contactTrace.toText());
+            contactForm.reset();
+            updateDebugLog(contactDebugId, {
+              title: 'お問い合わせの送信に成功しました',
+              status: 'success',
+              detail: `${resultText}\n\nプロセスログ\n${contactTrace.toText() || 'ログなし'}`,
+            });
+          })
+          .withFailureHandler((error) => {
+            contactSubmitButton.disabled = false;
+            const errorMessage = `送信に失敗しました。\n${error.message || error}`;
+            contactTrace.addError(error);
+            renderResultWithTrace(contactResult, errorMessage, 'error', contactTrace.toText());
+            updateDebugLog(contactDebugId, {
+              title: 'お問い合わせ送信でエラーが発生しました',
+              status: 'error',
+              detail: `${error && error.message ? error.message : String(error)}\n\nプロセスログ\n${
+                contactTrace.toText() || 'ログなし'
+              }`,
+            });
+          })
+          .submitContactFeedback(message);
+      }
+
+      /**
+       * 実行結果をユーザーが読みやすい文字列に整形します。
+       * @param {*} result - サーバーから返された値
+       * @returns {string}
+       */
+      function formatResult(result) {
+        if (result === undefined || result === null || result === '') {
+          return '処理が完了しました。';
+        }
+        if (typeof result === 'string') {
+          return result;
+        }
+        try {
+          return JSON.stringify(result, null, 2);
+        } catch (e) {
+          return String(result);
+        }
+      }
+    </script>
+  </body>
+</html>
