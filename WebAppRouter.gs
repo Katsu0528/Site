@@ -1,32 +1,40 @@
 /**
- * Webアプリの入り口となる doGet 関数です。
- * HTML テンプレートにアクション定義を渡して描画します。
+ * OTONARI Web アプリのエントリーポイントと、ACS API 呼び出しの共通ユーティリティ。
+ * API 認証はアクセスキーとシークレットキーをコロンで連結した値をヘッダーに設定するだけの
+ * シンプルな方式とし、コードの見通しを良くしています。
+ */
+
+// -----------------------------
+// Web エントリーポイント
+// -----------------------------
+
+/**
+ * Web アプリの入り口となる doGet 関数です。
+ * @param {Object} e - リクエストパラメータ
+ * @return {HtmlOutput}
  */
 function doGet(e) {
-  var params = (e && e.parameter) || {};
+  const params = (e && e.parameter) || {};
   Logger.log('doGet params: %s', JSON.stringify(params));
 
   try {
-    if ((params.view || '') === 'media-register') {
-      return renderMediaRegisterPage();
+    switch (params.view || '') {
+      case 'media-register':
+        return renderMediaRegisterPage();
+      case 'promotion-apply':
+        return renderPromotionApplyPage();
+      default:
+        return renderPortalPage(params);
     }
-    if ((params.view || '') === 'promotion-apply') {
-      return renderPromotionApplyPage();
-    }
-    return renderPortalPage(params);
   } catch (err) {
     Logger.log('doGet error: %s', (err && err.stack) || err);
     return HtmlService.createHtmlOutput(
-        '<h1>サーバー側エラー</h1><pre>' +
-        (err && (err.stack || err.toString())) +
-        '</pre>'
-      )
-      .setTitle('OTONARI API エラー');
+      '<h1>サーバー側エラー</h1><pre>' + (err && (err.stack || err.toString())) + '</pre>'
+    ).setTitle('OTONARI API エラー');
   }
 }
 
 function renderPortalPage(params) {
-  params = params || {};
   const template = HtmlService.createTemplateFromFile('MainSite');
   template.actionsJson = getWebActionDefinitions();
   template.logoUrl = getLogoUrlFromSheet();
@@ -60,9 +68,13 @@ function renderPromotionApplyPage() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+// -----------------------------
+// Web アクション実行
+// -----------------------------
+
 /**
  * Web アクションの最小限の情報を抽出して返します。
- * 直接 HTML で扱いやすい構造にすることで保守性を高めています。
+ * @return {Array<Object>}
  */
 function getWebActionDefinitions() {
   const configList = getWebActionConfigList();
@@ -72,9 +84,7 @@ function getWebActionDefinitions() {
   }
 
   return configList
-    .filter(function(action) {
-      return action && typeof action === 'object';
-    })
+    .filter(function(action) { return action && typeof action === 'object'; })
     .map(function(action) {
       return {
         id: action.id,
@@ -82,23 +92,23 @@ function getWebActionDefinitions() {
         name: action.name,
         description: action.description,
         handler: action.handler,
-        fields: action.fields || []
+        fields: action.fields || [],
       };
     });
 }
 
 /**
  * クライアントからリクエストされたアクションを実際の処理にディスパッチします。
- * actionId に紐づく handler を安全に呼び出し、結果をそのまま返却します。
+ * @param {string} actionId
+ * @param {Object} formValues
+ * @return {Object}
  */
 function runWebAction(actionId, formValues) {
   if (!actionId) {
     throw new Error('アクションIDが指定されていません。');
   }
 
-  const action = getWebActionConfigList().find(function(item) {
-    return item.id === actionId;
-  });
+  const action = getWebActionConfigList().find(function(item) { return item.id === actionId; });
   if (!action) {
     throw new Error('指定されたアクションが見つかりません: ' + actionId);
   }
@@ -116,15 +126,12 @@ function runWebAction(actionId, formValues) {
     if (!field.optional && (!value && value !== 0)) {
       throw new Error('必須項目が未入力です: ' + field.label);
     }
-    // 未入力の場合は null を渡すことで、既存処理の分岐を書き換えなくても良いようにしています。
     return value === '' ? null : value;
   });
 
   const capturedLogs = [];
   const restoreLogging = captureExecutionLogs(capturedLogs);
-
   try {
-    // 引数が無い場合は apply を通さず直接実行し、エラーハンドリングを簡潔に保ちます。
     const result = args.length ? handler.apply(null, args) : handler();
     const embeddedLogs = result && Array.isArray(result.logs) ? result.logs : [];
     return { result: result, logs: capturedLogs.concat(embeddedLogs) };
@@ -133,9 +140,14 @@ function runWebAction(actionId, formValues) {
   }
 }
 
+// -----------------------------
+// ロギングユーティリティ
+// -----------------------------
+
 /**
- * Logger.log / console.* に出力される内容を配列に蓄積し、呼び出し元へ返却できるようにします。
- * 実行後は必ず restore 関数で元の状態に戻してください。
+ * Logger.log / console.* に出力される内容を配列に蓄積します。
+ * @param {Array<Object>} buffer
+ * @return {function(): void}
  */
 function captureExecutionLogs(buffer) {
   const target = Array.isArray(buffer) ? buffer : [];
@@ -147,50 +159,26 @@ function captureExecutionLogs(buffer) {
     error: console.error || console.log || function() {},
   };
 
-  const append = function(level, args) {
+  function append(level, args) {
     try {
       const message = Array.prototype.slice.call(args).map(function(part) {
-        if (part === null || part === undefined) {
-          return '';
-        }
-        if (typeof part === 'string') {
-          return part;
-        }
+        if (part === null || part === undefined) return '';
+        if (typeof part === 'string') return part;
         try {
           return JSON.stringify(part);
         } catch (e) {
           return String(part);
         }
       }).join(' ');
-      if (message) {
-        target.push({ level: level || 'info', message: message });
-      }
-    } catch (ignored) {
-      // ログ出力の失敗は処理継続を優先し、握りつぶします。
-    }
-  };
+      if (message) target.push({ level: level || 'info', message: message });
+    } catch (ignored) {}
+  }
 
-  Logger.log = function() {
-    append('info', arguments);
-    return originalLoggerLog.apply(Logger, arguments);
-  };
-
-  console.log = function() {
-    append('info', arguments);
-    return originalConsole.log.apply(console, arguments);
-  };
-  console.info = function() {
-    append('info', arguments);
-    return originalConsole.info.apply(console, arguments);
-  };
-  console.warn = function() {
-    append('warning', arguments);
-    return originalConsole.warn.apply(console, arguments);
-  };
-  console.error = function() {
-    append('error', arguments);
-    return originalConsole.error.apply(console, arguments);
-  };
+  Logger.log = function() { append('info', arguments); return originalLoggerLog.apply(Logger, arguments); };
+  console.log = function() { append('info', arguments); return originalConsole.log.apply(console, arguments); };
+  console.info = function() { append('info', arguments); return originalConsole.info.apply(console, arguments); };
+  console.warn = function() { append('warning', arguments); return originalConsole.warn.apply(console, arguments); };
+  console.error = function() { append('error', arguments); return originalConsole.error.apply(console, arguments); };
 
   return function restoreLogging() {
     Logger.log = originalLoggerLog;
@@ -201,20 +189,18 @@ function captureExecutionLogs(buffer) {
   };
 }
 
-/**
- * HTML ファイルをインクルードするためのヘルパーです。
- * 必要に応じてテンプレート内から呼び出してください。
- */
+// -----------------------------
+// テンプレート・静的資産
+// -----------------------------
+
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
-/**
- * シートに格納されたロゴ画像を取得して data URL もしくは公開 URL として返します。
- * 取得に失敗した場合は空文字を返し、フロント側でフォールバック表示を行います。
- *
- * @return {string}
- */
+// -----------------------------
+// ロゴ取得ヘルパー
+// -----------------------------
+
 function getLogoUrlFromSheet() {
   const SPREADSHEET_ID = '1f22F3tSeK3PNndceAVmEeQPlDx48O4BCAid1HroJsuw';
   const SHEET_NAME = 'シート1';
@@ -222,69 +208,47 @@ function getLogoUrlFromSheet() {
 
   try {
     const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      throw new Error('シートが見つかりません: ' + SHEET_NAME);
-    }
+    if (!sheet) throw new Error('シートが見つかりません: ' + SHEET_NAME);
 
     const range = sheet.getRange(TARGET_RANGE);
     const value = range.getValue();
 
-    // 新しい CellImage API で画像が格納されている場合
     if (value && typeof value === 'object') {
       const blobDataUrl = convertBlobToDataUrl(value);
-      if (blobDataUrl) {
-        return blobDataUrl;
-      }
+      if (blobDataUrl) return blobDataUrl;
 
       if (typeof value.getSourceUrl === 'function') {
         const sourceUrl = value.getSourceUrl();
-        if (sourceUrl) {
-          return sourceUrl;
-        }
+        if (sourceUrl) return sourceUrl;
       }
     }
 
-    // セル上に配置された画像（オーバーセル画像）を探索
     const images = sheet.getImages && sheet.getImages();
     if (images && typeof images.forEach === 'function') {
       for (var i = 0; i < images.length; i++) {
         var image = images[i];
-        if (!image) {
-          continue;
-        }
+        if (!image) continue;
 
-        var anchorCell = typeof image.getAnchorCell === 'function'
-          ? image.getAnchorCell()
-          : null;
-
+        var anchorCell = typeof image.getAnchorCell === 'function' ? image.getAnchorCell() : null;
         if (!anchorCell) {
           var anchorRow = typeof image.getAnchorRow === 'function' ? image.getAnchorRow() : null;
           var anchorColumn = typeof image.getAnchorColumn === 'function' ? image.getAnchorColumn() : null;
-          if (anchorRow && anchorColumn) {
-            anchorCell = sheet.getRange(anchorRow, anchorColumn);
-          }
+          if (anchorRow && anchorColumn) anchorCell = sheet.getRange(anchorRow, anchorColumn);
         }
 
         if (anchorCell && anchorCell.getA1Notation && anchorCell.getA1Notation() === TARGET_RANGE) {
           var overImageDataUrl = convertBlobToDataUrl(image);
-          if (overImageDataUrl) {
-            return overImageDataUrl;
-          }
+          if (overImageDataUrl) return overImageDataUrl;
         }
       }
     }
 
-    // =IMAGE("URL") 形式のセルから URL を抽出
     const formulaUrl = extractImageUrlFromFormula(range.getFormula());
-    if (formulaUrl) {
-      return formulaUrl;
-    }
+    if (formulaUrl) return formulaUrl;
 
     if (typeof value === 'string') {
       const trimmed = value.trim();
-      if (trimmed && /^https?:\/\//i.test(trimmed)) {
-        return trimmed;
-      }
+      if (trimmed && /^https?:\/\//i.test(trimmed)) return trimmed;
     }
   } catch (error) {
     console.error('ロゴ画像の取得に失敗しました: ' + error);
@@ -293,55 +257,28 @@ function getLogoUrlFromSheet() {
   return '';
 }
 
-/**
- * =IMAGE 関数の数式から画像 URL を取り出します。
- *
- * @param {string} formula
- * @return {string}
- */
 function extractImageUrlFromFormula(formula) {
-  if (!formula) {
-    return '';
-  }
-
+  if (!formula) return '';
   const doubleQuoteMatch = formula.match(/=IMAGE\(\s*"([^"]+)"/i);
-  if (doubleQuoteMatch && doubleQuoteMatch[1]) {
-    return doubleQuoteMatch[1];
-  }
-
+  if (doubleQuoteMatch && doubleQuoteMatch[1]) return doubleQuoteMatch[1];
   const singleQuoteMatch = formula.match(/=IMAGE\(\s*'([^']+)'/i);
-  if (singleQuoteMatch && singleQuoteMatch[1]) {
-    return singleQuoteMatch[1];
-  }
-
+  if (singleQuoteMatch && singleQuoteMatch[1]) return singleQuoteMatch[1];
   return '';
 }
 
-/**
- * Blob を持つ可能性があるオブジェクトから data URL を生成します。
- *
- * @param {Object} blobHolder
- * @return {string}
- */
 function convertBlobToDataUrl(blobHolder) {
-  if (!blobHolder || typeof blobHolder.getBlob !== 'function') {
-    return '';
-  }
-
+  if (!blobHolder || typeof blobHolder.getBlob !== 'function') return '';
   var blob = blobHolder.getBlob();
-  if (!blob) {
-    return '';
-  }
-
+  if (!blob) return '';
   var contentType = blob.getContentType() || 'image/png';
   var base64 = Utilities.base64Encode(blob.getBytes());
   return 'data:' + contentType + ';base64,' + base64;
 }
 
-/**
- * ACS API に接続するための設定が存在するかを判定します。
- * 秘密情報をフロントへ渡さないよう、Boolean のみ返却します。
- */
+// -----------------------------
+// 設定・プロパティ
+// -----------------------------
+
 function isAcsApiConfigured() {
   try {
     getApiConfig();
@@ -352,14 +289,6 @@ function isAcsApiConfigured() {
   }
 }
 
-/**
- * スクリプト プロパティを安全に取得し、未設定時はデフォルト値を返します。
- *
- * @param {PropertiesService} props
- * @param {string|string[]} keys 優先順位順のプロパティ名
- * @param {string=} defaultValue keys いずれも未設定の場合のフォールバック
- * @return {string}
- */
 function getCleanProperty(props, keys, defaultValue) {
   const targetKeys = Array.isArray(keys) ? keys : [keys];
   const store = props && typeof props.getProperty === 'function' ? props : null;
@@ -369,9 +298,7 @@ function getCleanProperty(props, keys, defaultValue) {
     var value = store ? store.getProperty(key) : null;
     if (value !== null && value !== undefined) {
       var trimmed = String(value).trim();
-      if (trimmed) {
-        return trimmed;
-      }
+      if (trimmed) return trimmed;
     }
   }
 
@@ -379,63 +306,50 @@ function getCleanProperty(props, keys, defaultValue) {
 }
 
 /**
- * ACS API に接続するための設定をまとめて取得します。
- *
- * @return {{ baseUrl: string, token: string, headers: Object }}
+ * ACS API に接続するための設定を取得します。
+ * @return {{ baseUrl: string, accessKey: string, secretKey: string, authHeader: Object }}
  */
 function getApiConfig() {
   const props = PropertiesService.getScriptProperties();
-  let baseUrl = getCleanProperty(
-    props,
-    ['OTONARI_BASE_URL'],
-    'https://otonari-asp.com/api/v1/m'
-  );
-  baseUrl = baseUrl.replace(/\/+$/, '');
+  let baseUrl = getCleanProperty(props, ['OTONARI_BASE_URL']);
+  baseUrl = (baseUrl || 'https://otonari-asp.com/api/v1/m').replace(/\/+$/, '');
 
-  const accessKey = getCleanProperty(props, ['OTONARI_ACCESS_KEY'], 'agqnoournapf');
-  const secretKey = getCleanProperty(
-    props,
-    ['OTONARI_SECRET_KEY'],
-    '5j39q2hzsmsccck0ccgo4w0o'
-  );
+  const accessKey = getCleanProperty(props, ['OTONARI_ACCESS_KEY']);
+  const secretKey = getCleanProperty(props, ['OTONARI_SECRET_KEY']);
 
   if (!baseUrl || !accessKey || !secretKey) {
-    throw new Error(
-      'ACS API の接続設定が不足しています。' +
-      '\nスクリプトプロパティに OTONARI_BASE_URL / OTONARI_ACCESS_KEY / OTONARI_SECRET_KEY を設定してください。'
-    );
+    throw new Error('ACS API の接続設定が不足しています。アクセスキーとシークレットキーを設定してください。');
   }
 
-  const token = accessKey + ':' + secretKey;
-
   return {
-    baseUrl,
-    token: token,
-    headers: { 'X-Auth-Token': token }
+    baseUrl: baseUrl,
+    accessKey: accessKey,
+    secretKey: secretKey,
+    authHeader: buildAcsAuthHeader(accessKey, secretKey),
   };
 }
 
 /**
- * ACS API を呼び出すための簡易クライアントを生成します。
- *
- * @return {{
- *   request: function(string, Object=): Object,
- *   findPromotionId: function(string): (string|null),
- *   findAffiliateId: function(string): (string|null),
- *   listMediaIdsByAffiliate: function(string): string[],
- *   registerPromotionApplication: function(string, string): void
- * }}
+ * API 仕様に沿ってアクセスキーとシークレットキーをコロンで結合したヘッダーを返します。
+ * @param {string} accessKey
+ * @param {string} secretKey
+ * @return {Object}
  */
+function buildAcsAuthHeader(accessKey, secretKey) {
+  var token = String(accessKey || '').trim() + ':' + String(secretKey || '').trim();
+  if (!token || token === ':') {
+    throw new Error('ACS API 認証情報が設定されていません。');
+  }
+  return { 'X-Auth-Token': token };
+}
+
+// -----------------------------
+// ACS API クライアント
+// -----------------------------
+
 function createAcsApiClient() {
   const config = getApiConfig();
-  const token = config && config.token;
-  const baseUrl = config && config.baseUrl;
-
-  if (!baseUrl || !token) {
-    throw new Error('ACS API の接続設定が見つかりません。');
-  }
-
-  const normalizedBaseUrl = baseUrl.replace(/\/+$/, '');
+  const normalizedBaseUrl = config.baseUrl.replace(/\/+$/, '');
 
   function buildUrl(path, query) {
     const normalizedPath = path.charAt(0) === '/' ? path : '/' + path;
@@ -445,17 +359,12 @@ function createAcsApiClient() {
     if (query && typeof query === 'object') {
       Object.keys(query).forEach(function(key) {
         const value = query[key];
-        if (value === null || value === undefined || value === '') {
-          return;
-        }
+        if (value === null || value === undefined || value === '') return;
         params.push(encodeURIComponent(key) + '=' + encodeURIComponent(String(value)));
       });
     }
 
-    if (params.length) {
-      url += '?' + params.join('&');
-    }
-
+    if (params.length) url += '?' + params.join('&');
     return url;
   }
 
@@ -464,7 +373,7 @@ function createAcsApiClient() {
     const url = buildUrl(path, opts.query);
     const fetchOptions = {
       method: (opts.method || 'get').toLowerCase(),
-      headers: Object.assign({}, config.headers, opts.headers || {}),
+      headers: Object.assign({}, config.authHeader, opts.headers || {}),
       muteHttpExceptions: true,
     };
 
@@ -477,16 +386,10 @@ function createAcsApiClient() {
     const status = response.getResponseCode();
     const text = response.getContentText() || '';
     let data = null;
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch (parseError) {
-      // レスポンスが JSON でない場合でも処理を続ける
-    }
+    try { data = text ? JSON.parse(text) : null; } catch (parseError) {}
 
     if (status < 200 || status >= 300) {
-      const message =
-        (data && (data.message || data.error)) ||
-        'ACS API 呼び出しに失敗しました (HTTP ' + status + ')';
+      const message = (data && (data.message || data.error)) || 'ACS API 呼び出しに失敗しました (HTTP ' + status + ')';
       throw new Error(message);
     }
 
@@ -494,12 +397,8 @@ function createAcsApiClient() {
   }
 
   function normalizeRecords(records) {
-    if (Array.isArray(records)) {
-      return records;
-    }
-    if (records && typeof records === 'object') {
-      return Object.keys(records).length ? [records] : [];
-    }
+    if (Array.isArray(records)) return records;
+    if (records && typeof records === 'object') return Object.keys(records).length ? [records] : [];
     return [];
   }
 
@@ -510,63 +409,52 @@ function createAcsApiClient() {
     const defaultLimit = 100;
 
     while (true) {
-      const page = request(path, {
-        query: Object.assign({ offset: offset, limit: baseQuery.limit || defaultLimit }, baseQuery),
-      });
-
+      const page = request(path, { query: Object.assign({ offset: offset, limit: baseQuery.limit || defaultLimit }, baseQuery) });
       const records = normalizeRecords(page && page.records);
-      if (records.length) {
-        collected.push.apply(collected, records);
-      }
+      if (records.length) collected.push.apply(collected, records);
 
       const header = page && page.header;
-      const totalCount = header && Number(header.count);
-      const pageLimit = header && Number(header.limit) ? Number(header.limit) : (records.length || defaultLimit);
-
-      offset += pageLimit;
-      if (!totalCount || offset >= totalCount || records.length === 0) {
-        break;
-      }
+      const total = header && header.total ? Number(header.total) : null;
+      offset += baseQuery.limit || defaultLimit;
+      if (!total || offset >= total || !records.length) break;
     }
 
     return collected;
   }
 
-  function findFirstMatch(records, identifier) {
-    if (!identifier) {
-      return null;
-    }
-    const lowered = String(identifier).toLowerCase();
-    return records.find(function(record) {
-      if (!record) {
-        return false;
-      }
-      if (record.id && String(record.id) === identifier) {
-        return true;
-      }
-      if (record.name && String(record.name).toLowerCase() === lowered) {
-        return true;
-      }
-      return false;
-    });
-  }
-
   function findPromotionId(identifier) {
-    const promotions = fetchAll('/promotion/search', { id: identifier, name: identifier });
-    const match = findFirstMatch(promotions, identifier);
-    return match && match.id ? String(match.id) : null;
+    if (!identifier) return null;
+    if (/^p\d+$/i.test(identifier)) return identifier;
+
+    const promotions = fetchAll('/promotion/search', { keyword: identifier, limit: 50 });
+    const exact = promotions.find(function(promotion) { return promotion && promotion.id && promotion.id.toString() === identifier; });
+    if (exact && exact.id) return String(exact.id);
+
+    const partial = promotions.find(function(promotion) {
+      const name = promotion && promotion.name ? String(promotion.name) : '';
+      return name.indexOf(identifier) !== -1;
+    });
+    return partial && partial.id ? String(partial.id) : null;
   }
 
   function findAffiliateId(identifier) {
-    const affiliates = fetchAll('/user/search', { id: identifier, name: identifier });
-    const match = findFirstMatch(affiliates, identifier);
-    return match && match.id ? String(match.id) : null;
+    if (!identifier) return null;
+    if (/^u[a-z0-9]+$/i.test(identifier)) return identifier;
+
+    const affiliates = fetchAll('/user/search', { keyword: identifier, limit: 50 });
+    const exact = affiliates.find(function(user) { return user && user.id && user.id.toString() === identifier; });
+    if (exact && exact.id) return String(exact.id);
+
+    const partial = affiliates.find(function(user) {
+      const company = user && user.company ? String(user.company) : '';
+      const name = user && user.name ? String(user.name) : '';
+      return company.indexOf(identifier) !== -1 || name.indexOf(identifier) !== -1;
+    });
+    return partial && partial.id ? String(partial.id) : null;
   }
 
   function listMediaIdsByAffiliate(affiliateId) {
-    if (!affiliateId) {
-      return [];
-    }
+    if (!affiliateId) return [];
     const mediaList = fetchAll('/media/search', { user: affiliateId });
     return mediaList
       .map(function(media) { return media && media.id ? String(media.id) : ''; })
@@ -592,12 +480,10 @@ function createAcsApiClient() {
   };
 }
 
-/**
- * 提携申請シートから渡された行データを元に、広告とアフィリエイターを検索して提携申請をまとめて登録します。
- *
- * @param {Array<Object>} rows
- * @return {{ summary: Object, results: Object[] }}
- */
+// -----------------------------
+// ビジネスロジック
+// -----------------------------
+
 function registerPromotionApplicationsFromWeb(rows) {
   if (!Array.isArray(rows)) {
     throw new Error('入力データが不正です。');
@@ -626,19 +512,13 @@ function registerPromotionApplicationsFromWeb(rows) {
 
     try {
       const promotionId = api.findPromotionId(promotionIdentifier);
-      if (!promotionId) {
-        throw new Error('広告が見つかりませんでした。');
-      }
+      if (!promotionId) throw new Error('広告が見つかりませんでした。');
 
       const affiliateId = api.findAffiliateId(affiliateIdentifier);
-      if (!affiliateId) {
-        throw new Error('アフィリエイターが見つかりませんでした。');
-      }
+      if (!affiliateId) throw new Error('アフィリエイターが見つかりませんでした。');
 
       const mediaIds = api.listMediaIdsByAffiliate(affiliateId);
-      if (!mediaIds.length) {
-        throw new Error('対象アフィリエイターのメディアが見つかりませんでした。');
-      }
+      if (!mediaIds.length) throw new Error('対象アフィリエイターのメディアが見つかりませんでした。');
 
       const appliedMedia = [];
       const failedMedia = [];
@@ -659,12 +539,8 @@ function registerPromotionApplicationsFromWeb(rows) {
 
       const messages = [];
       messages.push(mediaIds.length + '件のメディアを対象に申請しました。');
-      if (appliedMedia.length) {
-        messages.push('申請済み: ' + appliedMedia.join(', '));
-      }
-      if (failedMedia.length) {
-        messages.push('失敗: ' + failedMedia.join(' / '));
-      }
+      if (appliedMedia.length) messages.push('申請済み: ' + appliedMedia.join(', '));
+      if (failedMedia.length) messages.push('失敗: ' + failedMedia.join(' / '));
 
       results.push({
         rowNumber: rowNumber,
