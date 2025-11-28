@@ -554,11 +554,11 @@
         eyebrow: 'Partnership Apply',
         title: '提携申請シート',
         lead:
-          '広告名とメディア名を入力すると、対応するIDを検索して提携申請を送信します。',
+          '広告名とアフィリエイター名を入力すると、対応するIDを検索して提携申請を送信します。',
         helperTexts: [
           'A列に提携申請したい広告の「広告名」または「広告ID」を入力してください。',
-          'B列に申請対象となるメディアの「メディア名」または「メディアID」を入力してください。スプレッドシートのコピー＆ペーストも利用できます。',
-          '広告名・メディア名から ID を検索するときはローカルのマスタではなく、毎回 /promotion/search と /media/search の API 結果から ID を取得して申請します。',
+          'B列に申請対象となるアフィリエイターの「アフィリエイター名」または「アフィリエイターID」を入力してください。スプレッドシートのコピー＆ペーストも利用できます。',
+          '広告名・アフィリエイター名から ID を検索するときはローカルのマスタではなく、毎回 /promotion/search と /affiliate/search の API 結果から ID を取得して申請します。',
         ],
         columns: [
           {
@@ -570,15 +570,15 @@
           {
             key: 'mediaIdentifier',
             letter: 'B',
-            label: 'メディア名 / メディアID',
-            placeholder: '例: サンプルメディア1',
+            label: 'アフィリエイター名 / アフィリエイターID',
+            placeholder: '例: サンプルアフィリエイター1',
           },
         ],
         resultColumns: [
           { key: 'rowNumber', label: '行番号' },
           { key: 'status', label: 'ステータス', type: 'status' },
           { key: 'promotionId', label: '広告ID' },
-          { key: 'mediaId', label: 'メディアID' },
+          { key: 'mediaId', label: 'アフィリエイターID' },
           { key: 'message', label: 'メッセージ' },
         ],
       };
