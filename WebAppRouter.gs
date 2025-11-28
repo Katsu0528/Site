@@ -385,16 +385,19 @@ function getCleanProperty(props, keys, defaultValue) {
  */
 function getApiConfig() {
   const props = PropertiesService.getScriptProperties();
-  let baseUrl =
-    getCleanProperty(props, ['OTONARI_BASE_URL', 'https://otonari-asp.com/api/v1/m']) ||
-    'https://otonari-asp.com/api/v1/m';
+  let baseUrl = getCleanProperty(
+    props,
+    ['OTONARI_BASE_URL'],
+    'https://otonari-asp.com/api/v1/m'
+  );
   baseUrl = baseUrl.replace(/\/+$/, '');
 
-  const accessKey =
-    getCleanProperty(props, ['OTONARI_ACCESS_KEY', 'agqnoournapf']) || 'agqnoournapf';
-  const secretKey =
-    getCleanProperty(props, ['OTONARI_SECRET_KEY', '5j39q2hzsmsccck0ccgo4w0o']) ||
-    '5j39q2hzsmsccck0ccgo4w0o';
+  const accessKey = getCleanProperty(props, ['OTONARI_ACCESS_KEY'], 'agqnoournapf');
+  const secretKey = getCleanProperty(
+    props,
+    ['OTONARI_SECRET_KEY'],
+    '5j39q2hzsmsccck0ccgo4w0o'
+  );
 
   if (!accessKey || !secretKey) {
     throw new Error('APIのアクセスキーまたはシークレットキーが設定されていません。');
