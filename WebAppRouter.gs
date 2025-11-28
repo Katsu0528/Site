@@ -381,7 +381,7 @@ function getCleanProperty(props, keys, defaultValue) {
 /**
  * ACS API に接続するための設定をまとめて取得します。
  *
- * @return {{ baseUrl: string, headers: Object }}
+ * @return {{ baseUrl: string, token: string, headers: Object }}
  */
 function getApiConfig() {
   const props = PropertiesService.getScriptProperties();
@@ -399,13 +399,19 @@ function getApiConfig() {
     '5j39q2hzsmsccck0ccgo4w0o'
   );
 
-  if (!accessKey || !secretKey) {
-    throw new Error('APIのアクセスキーまたはシークレットキーが設定されていません。');
+  if (!baseUrl || !accessKey || !secretKey) {
+    throw new Error(
+      'ACS API の接続設定が不足しています。' +
+      '\nスクリプトプロパティに OTONARI_BASE_URL / OTONARI_ACCESS_KEY / OTONARI_SECRET_KEY を設定してください。'
+    );
   }
+
+  const token = accessKey + ':' + secretKey;
 
   return {
     baseUrl,
-    headers: { 'X-Auth-Token': accessKey + ':' + secretKey }
+    token: token,
+    headers: { 'X-Auth-Token': token }
   };
 }
 
@@ -422,7 +428,7 @@ function getApiConfig() {
  */
 function createAcsApiClient() {
   const config = getApiConfig();
-  const token = config && config.headers && config.headers['X-Auth-Token'];
+  const token = config && config.token;
   const baseUrl = config && config.baseUrl;
 
   if (!baseUrl || !token) {
