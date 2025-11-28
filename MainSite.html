@@ -296,6 +296,34 @@
         line-height: 1.5;
       }
 
+      .promotion-apply-card__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .promotion-apply-card__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        color: var(--accent);
+        background: var(--accent-light);
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+
+      .promotion-apply-card__link:hover,
+      .promotion-apply-card__link:focus-visible {
+        outline: none;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0, 82, 204, 0.18);
+      }
+
       form {
         display: flex;
         flex-direction: column;
@@ -1679,6 +1707,24 @@
         const description = document.createElement('p');
         description.textContent = action.description;
         card.appendChild(description);
+
+        const actions = document.createElement('div');
+        actions.className = 'promotion-apply-card__actions';
+
+        const openStandalone = document.createElement('a');
+        openStandalone.className = 'promotion-apply-card__link';
+        openStandalone.href = buildAbsoluteUrl({ view: 'promotion-apply' });
+        openStandalone.target = '_top';
+        openStandalone.rel = 'noopener noreferrer';
+        openStandalone.textContent = '提携申請シートを開く';
+        openStandalone.addEventListener('click', (event) => {
+          if (event) {
+            event.stopPropagation();
+          }
+        });
+
+        actions.appendChild(openStandalone);
+        card.appendChild(actions);
 
         const appContainer = document.createElement('div');
         appContainer.className = 'media-register-card__app';
