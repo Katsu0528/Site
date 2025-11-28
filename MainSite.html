@@ -944,6 +944,7 @@
         }
         return map;
       }, {});
+      const ACS_API_CONFIGURED = <?!= JSON.stringify(acsApiConfigured !== false) ?>;
       const AD_REGISTRATION_COOKIE_PREFIX = 'adRegForm.';
       const AD_REGISTRATION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30日
       const AD_REGISTRATION_SECTION_CONFIGS = [
@@ -1718,6 +1719,7 @@
             showBackLink: false,
             showHeader: false,
             mode: 'inline',
+            acsApiConfigured: ACS_API_CONFIGURED,
           });
         } else {
           const fallback = document.createElement('p');

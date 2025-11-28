@@ -1,5 +1,28 @@
 # ACS API 利用メモ
 
+## 接続設定（必須）
+
+- Apps Script のスクリプト プロパティに以下の値を登録してください（未設定時は固定値にフォールバックします）。
+  - `OTONARI_BASE_URL` — 例: `https://otonari-asp.com/api/v1/m`
+  - `OTONARI_ACCESS_KEY` — 省略時は `agqnoournapf`
+  - `OTONARI_SECRET_KEY` — 省略時は `5j39q2hzsmsccck0ccgo4w0o`
+- 上記が未設定でも既定値で動作しますが、環境ごとに固有のキーを設定することを推奨します。
+
+```js
+// 例: /promotion/search を叩く場合の最低限の呼び出し形
+const baseUrl = 'https://otonari-asp.com/api/v1/m';
+const accessKey = 'agqnoournapf';
+const secretKey = '5j39q2hzsmsccck0ccgo4w0o';
+const token = `${accessKey}:${secretKey}`;
+const searchUrl = `${baseUrl}/promotion/search?name=${encodeURIComponent(promotionName)}&advertiser=${advertiserId}`;
+const searchOptions = {
+  method: 'get',
+  headers: { 'X-Auth-Token': token },
+  muteHttpExceptions: true,
+};
+const response = UrlFetchApp.fetch(searchUrl, searchOptions);
+```
+
 ## 広告枠 取得（複数） `/media_space/search`
 
 - 初期ソート: 登録日時の降順。

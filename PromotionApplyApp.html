@@ -515,6 +515,7 @@
           showBackLink: true,
           showHeader: true,
           mode: 'standalone',
+          acsApiConfigured: true,
         },
         options || {},
       );
@@ -645,6 +646,8 @@
       let lastValidationDetails = { invalidSelects: [], incompleteRows: [] };
       let isProcessing = false;
 
+      const acsApiConfigured = settings.acsApiConfigured !== false;
+
       buildTableHead();
       buildResultHead();
       const initialRowCount = Math.max(1, Number(settings.initialRows) || 5);
@@ -656,7 +659,24 @@
         google.script &&
         typeof google.script.run === 'object';
 
-      if (!gasRunnerAvailable && environmentWarning) {
+      const environmentWarnings = [];
+      if (!gasRunnerAvailable) {
+        environmentWarnings.push(
+          'プレビュー環境のため実行できません。Google Apps Script のWebアプリとして開いた状態でご利用ください。',
+        );
+      }
+      if (!acsApiConfigured) {
+        environmentWarnings.push(
+          'ACS API への接続は固定のアクセスキー/シークレットキー（agqnoournapf / 5j39q2hzsmsccck0ccgo4w0o）を利用します。設定が無効な場合はスクリプト管理者に確認してください。',
+        );
+        if (executeButton) {
+          executeButton.disabled = true;
+          executeButton.setAttribute('aria-disabled', 'true');
+        }
+      }
+
+      if (environmentWarning && environmentWarnings.length) {
+        environmentWarning.textContent = environmentWarnings.join(' ');
         environmentWarning.hidden = false;
       }
 
@@ -1250,6 +1270,10 @@
         if (hasValidationErrors()) {
           setStatus('未入力の項目、または無効な選択があるため実行できません。', 'error');
           focusFirstInvalidField();
+          return;
+        }
+        if (settings.acsApiConfigured === false) {
+          setStatus('ACS API への接続は固定のアクセスキー/シークレットキー（agqnoournapf / 5j39q2hzsmsccck0ccgo4w0o）で行われます。設定が無効な場合はスクリプト管理者に確認してください。', 'error');
           return;
         }
         const rows = collectRows().filter(hasValues);

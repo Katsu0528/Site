@@ -32,6 +32,7 @@ function renderPortalPage(params) {
   template.logoUrl = getLogoUrlFromSheet();
   template.selectedActionId = params.action || '';
   template.selectedView = params.view || '';
+  template.acsApiConfigured = isAcsApiConfigured();
   template.baseUrl = ScriptApp.getService().getUrl();
   return template
     .evaluate()
@@ -42,6 +43,7 @@ function renderPortalPage(params) {
 function renderMediaRegisterPage() {
   const template = HtmlService.createTemplateFromFile('MediaRegister');
   template.portalUrl = ScriptApp.getService().getUrl();
+  template.acsApiConfigured = isAcsApiConfigured();
   return template
     .evaluate()
     .setTitle('メディア登録')
@@ -51,6 +53,7 @@ function renderMediaRegisterPage() {
 function renderPromotionApplyPage() {
   const template = HtmlService.createTemplateFromFile('PromotionApply');
   template.portalUrl = ScriptApp.getService().getUrl();
+  template.acsApiConfigured = isAcsApiConfigured();
   return template
     .evaluate()
     .setTitle('提携申請登録')
@@ -333,4 +336,72 @@ function convertBlobToDataUrl(blobHolder) {
   var contentType = blob.getContentType() || 'image/png';
   var base64 = Utilities.base64Encode(blob.getBytes());
   return 'data:' + contentType + ';base64,' + base64;
+}
+
+/**
+ * ACS API に接続するための設定が存在するかを判定します。
+ * 秘密情報をフロントへ渡さないよう、Boolean のみ返却します。
+ */
+function isAcsApiConfigured() {
+  try {
+    getApiConfig();
+    return true;
+  } catch (error) {
+    console.warn('ACS API 設定の確認に失敗しました: %s', error);
+    return false;
+  }
+}
+
+/**
+ * スクリプト プロパティを安全に取得し、未設定時はデフォルト値を返します。
+ *
+ * @param {PropertiesService} props
+ * @param {string|string[]} keys 優先順位順のプロパティ名
+ * @param {string=} defaultValue keys いずれも未設定の場合のフォールバック
+ * @return {string}
+ */
+function getCleanProperty(props, keys, defaultValue) {
+  const targetKeys = Array.isArray(keys) ? keys : [keys];
+  const store = props && typeof props.getProperty === 'function' ? props : null;
+
+  for (var i = 0; i < targetKeys.length; i++) {
+    var key = targetKeys[i];
+    var value = store ? store.getProperty(key) : null;
+    if (value !== null && value !== undefined) {
+      var trimmed = String(value).trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+  }
+
+  return typeof defaultValue === 'undefined' ? '' : String(defaultValue);
+}
+
+/**
+ * ACS API に接続するための設定をまとめて取得します。
+ *
+ * @return {{ baseUrl: string, headers: Object }}
+ */
+function getApiConfig() {
+  const props = PropertiesService.getScriptProperties();
+  let baseUrl =
+    getCleanProperty(props, ['OTONARI_BASE_URL', 'https://otonari-asp.com/api/v1/m']) ||
+    'https://otonari-asp.com/api/v1/m';
+  baseUrl = baseUrl.replace(/\/+$/, '');
+
+  const accessKey =
+    getCleanProperty(props, ['OTONARI_ACCESS_KEY', 'agqnoournapf']) || 'agqnoournapf';
+  const secretKey =
+    getCleanProperty(props, ['OTONARI_SECRET_KEY', '5j39q2hzsmsccck0ccgo4w0o']) ||
+    '5j39q2hzsmsccck0ccgo4w0o';
+
+  if (!accessKey || !secretKey) {
+    throw new Error('APIのアクセスキーまたはシークレットキーが設定されていません。');
+  }
+
+  return {
+    baseUrl,
+    headers: { 'X-Auth-Token': accessKey + ':' + secretKey }
+  };
 }
