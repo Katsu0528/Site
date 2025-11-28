@@ -1708,24 +1708,6 @@
         description.textContent = action.description;
         card.appendChild(description);
 
-        const actions = document.createElement('div');
-        actions.className = 'promotion-apply-card__actions';
-
-        const openStandalone = document.createElement('a');
-        openStandalone.className = 'promotion-apply-card__link';
-        openStandalone.href = buildAbsoluteUrl({ view: 'promotion-apply' });
-        openStandalone.target = '_top';
-        openStandalone.rel = 'noopener noreferrer';
-        openStandalone.textContent = '提携申請シートを開く';
-        openStandalone.addEventListener('click', (event) => {
-          if (event) {
-            event.stopPropagation();
-          }
-        });
-
-        actions.appendChild(openStandalone);
-        card.appendChild(actions);
-
         const appContainer = document.createElement('div');
         appContainer.className = 'media-register-card__app';
         card.appendChild(appContainer);
