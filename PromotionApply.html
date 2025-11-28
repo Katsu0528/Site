@@ -25,7 +25,9 @@
             showBackLink: true,
             showHeader: true,
             mode: 'standalone',
-            acsApiConfigured: <?!= JSON.stringify(acsApiConfigured !== false) ?>,
+            acsApiConfigured: <?!= JSON.stringify(
+              typeof acsApiConfigured !== 'undefined' && acsApiConfigured !== false
+            ) ?>,
           });
         }
       });

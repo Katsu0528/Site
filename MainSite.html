@@ -944,7 +944,9 @@
         }
         return map;
       }, {});
-      const ACS_API_CONFIGURED = <?!= JSON.stringify(acsApiConfigured !== false) ?>;
+      const ACS_API_CONFIGURED = <?!= JSON.stringify(
+        typeof acsApiConfigured !== 'undefined' && acsApiConfigured !== false
+      ) ?>;
       const AD_REGISTRATION_COOKIE_PREFIX = 'adRegForm.';
       const AD_REGISTRATION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30日
       const AD_REGISTRATION_SECTION_CONFIGS = [
