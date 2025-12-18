@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <base href="<?!= baseUrl ?>" target="_top" />
+    <meta charset="UTF-8" />
+    <title>自動販売機アンケート</title>
+    <style>
+      :root {
+        --accent: #0052cc;
+        --accent-strong: #0a2b80;
+        --bg: #f6f8fb;
+        --text: #1b1b1b;
+        --muted: #6b7280;
+        --card: #ffffff;
+        --border: #d6e1f2;
+        --shadow: 0 10px 30px rgba(22, 72, 172, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Noto Sans JP', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+          'Segoe UI', sans-serif;
+        background: linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      header.page-hero {
+        padding: 32px 24px;
+        background: radial-gradient(circle at 20% 20%, rgba(0, 82, 204, 0.12), transparent 30%),
+          radial-gradient(circle at 80% 0%, rgba(0, 82, 204, 0.08), transparent 32%),
+          var(--card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+
+      .hero-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .hero-text h1 {
+        margin: 4px 0 8px;
+        font-size: 1.8rem;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-text p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #e8f1ff;
+        color: var(--accent-strong);
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        font-size: 0.82rem;
+      }
+
+      .overall-counter {
+        background: #0a1f4d;
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 12px;
+        min-width: 96px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        font-weight: 700;
+      }
+
+      main.content {
+        max-width: 1080px;
+        margin: 24px auto 60px;
+        padding: 0 24px 24px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+
+      .section-note {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+
+      .count-badge {
+        background: #eaf1ff;
+        color: var(--accent-strong);
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        min-width: 64px;
+        text-align: center;
+        border: 1px solid rgba(0, 82, 204, 0.2);
+      }
+
+      .category-tabs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .category-tab {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #f9fbff;
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s ease;
+      }
+
+      .category-tab.active {
+        border-color: var(--accent);
+        color: var(--accent-strong);
+        box-shadow: 0 6px 18px rgba(0, 82, 204, 0.16);
+        background: #fff;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+      }
+
+      .product-card {
+        background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .product-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+      }
+
+      .product-card.selected {
+        border-color: var(--accent);
+        box-shadow: 0 10px 24px rgba(0, 82, 204, 0.24);
+      }
+
+      .product-card.disabled {
+        opacity: 0.45;
+        pointer-events: none;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 160px;
+        object-fit: contain;
+        background: #f1f5fb;
+        border-radius: 12px;
+        border: 1px dashed #d5def0;
+      }
+
+      .product-meta h3 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+      }
+
+      .product-meta .maker {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .product-meta .price {
+        margin: 4px 0 0;
+        font-weight: 700;
+        color: var(--accent-strong);
+      }
+
+      .maker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+      }
+
+      .maker-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .maker-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+      }
+
+      .maker-card.selected {
+        border-color: var(--accent);
+        box-shadow: 0 8px 20px rgba(0, 82, 204, 0.24);
+      }
+
+      .maker-card.dimmed {
+        opacity: 0.4;
+      }
+
+      .maker-image {
+        width: 100%;
+        height: 140px;
+        object-fit: contain;
+        background: #f4f7fb;
+        border-radius: 12px;
+        border: 1px dashed #d5def0;
+      }
+
+      textarea#feedback {
+        width: 100%;
+        min-height: 120px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: vertical;
+      }
+
+      textarea#feedback:focus {
+        outline: 2px solid rgba(0, 82, 204, 0.32);
+        border-color: var(--accent);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .primary-btn {
+        background: linear-gradient(90deg, #0a3ea8, #0052cc);
+        color: #fff;
+        border: none;
+        padding: 14px 20px;
+        font-size: 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 12px 22px rgba(0, 82, 204, 0.28);
+        min-width: 160px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      }
+
+      .primary-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .status {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .status.error {
+        color: #b00020;
+        font-weight: 700;
+      }
+
+      .status.success {
+        color: #0f7b3a;
+        font-weight: 700;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border-radius: 12px;
+        border: 1px dashed var(--border);
+        text-align: center;
+        color: var(--muted);
+        background: #f9fbff;
+      }
+
+      @media (max-width: 720px) {
+        .hero-inner {
+          flex-direction: column;
+        }
+
+        .card-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .primary-btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="page-hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <span class="eyebrow">アンケート</span>
+          <h1>自動販売機に関するアンケート</h1>
+          <p>
+            飲みたい商品や自販機の好みをお聞かせください。メールアドレスは自動で記録しますが、
+            ページ上では表示されません。選択は最大3商品まで、下にスクロールして順番にご回答ください。
+          </p>
+        </div>
+        <div class="overall-counter" id="overallCounter">0/3</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="card" id="question1">
+        <div class="card-header">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 6px">Q1</p>
+            <h2>飲みたい商品を最大3つまで選択</h2>
+            <p class="section-note">カテゴリーをタップすると該当商品の一覧が表示されます。</p>
+          </div>
+          <div class="count-badge" id="productCount">0/3</div>
+        </div>
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+
+      <section class="card" id="question2">
+        <div class="card-header">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 6px">Q2</p>
+            <h2>好きな自販機メーカーを選択</h2>
+            <p class="section-note">画像をタップすると枠が付きます。もう一度タップで解除できます。</p>
+          </div>
+        </div>
+        <div class="maker-grid" id="makerGrid"></div>
+      </section>
+
+      <section class="card" id="question3">
+        <div class="card-header">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 6px">Q3</p>
+            <h2>自由記入（任意）</h2>
+            <p class="section-note">その他のご要望やコメントがあればご記入ください。</p>
+          </div>
+        </div>
+        <textarea id="feedback" placeholder="例: もっと小容量の飲み物があると嬉しいです"></textarea>
+        <div class="actions">
+          <div class="status" id="statusMessage">読み込み中...</div>
+          <button class="primary-btn" id="submitButton" type="button">送信する</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const surveyState = {
+        categories: [],
+        manufacturerImages: [],
+        selectedCategoryKey: '',
+        selectedProducts: [],
+        selectedMakerId: '',
+        selectedMakerName: '',
+        maxSelections: 3,
+      };
+
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('submitButton').addEventListener('click', handleSubmit);
+        loadSurvey();
+      });
+
+      function setStatus(message, type) {
+        const el = document.getElementById('statusMessage');
+        el.textContent = message || '';
+        el.className = 'status' + (type ? ' ' + type : '');
+      }
+
+      function loadSurvey() {
+        setStatus('読み込み中...');
+        google.script.run
+          .withSuccessHandler(function(data) {
+            surveyState.categories = data && data.categories ? data.categories : [];
+            surveyState.manufacturerImages = data && data.manufacturerImages ? data.manufacturerImages : [];
+            surveyState.maxSelections = (data && data.maxSelections) || 3;
+            surveyState.selectedCategoryKey = surveyState.categories[0] ? surveyState.categories[0].key : '';
+
+            renderCategories();
+            renderProducts();
+            renderMakers();
+            updateCounters();
+            setStatus('');
+          })
+          .withFailureHandler(function(err) {
+            console.error(err);
+            setStatus('読み込みに失敗しました。時間を置いて再度お試しください。', 'error');
+          })
+          .getVendingSurveyData();
+      }
+
+      function renderCategories() {
+        const container = document.getElementById('categoryTabs');
+        container.innerHTML = '';
+        surveyState.categories.forEach(function(category) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'category-tab' + (category.key === surveyState.selectedCategoryKey ? ' active' : '');
+          button.textContent = category.label;
+          button.addEventListener('click', function() {
+            surveyState.selectedCategoryKey = category.key;
+            renderCategories();
+            renderProducts();
+          });
+          container.appendChild(button);
+        });
+      }
+
+      function renderProducts() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+        const category = surveyState.categories.find(function(item) {
+          return item.key === surveyState.selectedCategoryKey;
+        });
+
+        if (!category || !category.items || category.items.length === 0) {
+          grid.innerHTML = '<div class="empty-state">このカテゴリーの商品が見つかりません。</div>';
+          return;
+        }
+
+        const limitReached = surveyState.selectedProducts.length >= surveyState.maxSelections;
+
+        category.items.forEach(function(product) {
+          const card = document.createElement('div');
+          const isSelected = surveyState.selectedProducts.some(function(item) { return item.id === product.id; });
+          const isDisabled = !isSelected && limitReached;
+          card.className = 'product-card' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '');
+
+          const img = document.createElement('img');
+          img.src = product.imageUrl || '';
+          img.alt = product.name || '商品画像';
+          img.className = 'product-image';
+
+          const meta = document.createElement('div');
+          meta.className = 'product-meta';
+
+          const title = document.createElement('h3');
+          title.textContent = product.name || '名称未設定';
+          meta.appendChild(title);
+
+          const maker = document.createElement('p');
+          maker.className = 'maker';
+          maker.textContent = product.maker || 'メーカー情報なし';
+          meta.appendChild(maker);
+
+          if (product.price) {
+            const price = document.createElement('p');
+            price.className = 'price';
+            price.textContent = product.price;
+            meta.appendChild(price);
+          }
+
+          card.appendChild(img);
+          card.appendChild(meta);
+          card.addEventListener('click', function() { toggleProductSelection(product); });
+          grid.appendChild(card);
+        });
+      }
+
+      function toggleProductSelection(product) {
+        const existingIndex = surveyState.selectedProducts.findIndex(function(item) { return item.id === product.id; });
+        if (existingIndex >= 0) {
+          surveyState.selectedProducts.splice(existingIndex, 1);
+        } else {
+          if (surveyState.selectedProducts.length >= surveyState.maxSelections) return;
+          surveyState.selectedProducts.push({
+            id: product.id,
+            name: product.name,
+            maker: product.maker,
+            price: product.price,
+            categoryKey: product.categoryKey,
+          });
+        }
+        renderProducts();
+        updateCounters();
+      }
+
+      function renderMakers() {
+        const grid = document.getElementById('makerGrid');
+        grid.innerHTML = '';
+        if (!surveyState.manufacturerImages.length) {
+          grid.innerHTML = '<div class="empty-state">自販機メーカーの画像が見つかりません。</div>';
+          return;
+        }
+
+        const hasSelection = Boolean(surveyState.selectedMakerId);
+
+        surveyState.manufacturerImages.forEach(function(option) {
+          const card = document.createElement('div');
+          const isSelected = option.id === surveyState.selectedMakerId;
+          const classes = ['maker-card'];
+          if (isSelected) classes.push('selected');
+          if (hasSelection && !isSelected) classes.push('dimmed');
+          card.className = classes.join(' ');
+
+          const img = document.createElement('img');
+          img.className = 'maker-image';
+          img.src = option.imageUrl || '';
+          img.alt = option.name || '自販機メーカー画像';
+
+          const label = document.createElement('div');
+          label.textContent = option.name || '名称未設定';
+
+          card.appendChild(img);
+          card.appendChild(label);
+          card.addEventListener('click', function() { toggleMakerSelection(option); });
+          grid.appendChild(card);
+        });
+      }
+
+      function toggleMakerSelection(option) {
+        if (option.id === surveyState.selectedMakerId) {
+          surveyState.selectedMakerId = '';
+          surveyState.selectedMakerName = '';
+        } else {
+          surveyState.selectedMakerId = option.id;
+          surveyState.selectedMakerName = option.name || '';
+        }
+        renderMakers();
+      }
+
+      function updateCounters() {
+        const text = surveyState.selectedProducts.length + '/' + surveyState.maxSelections;
+        document.getElementById('productCount').textContent = text;
+        document.getElementById('overallCounter').textContent = text;
+      }
+
+      function handleSubmit() {
+        if (!surveyState.selectedProducts.length) {
+          setStatus('商品を1つ以上選択してください。', 'error');
+          return;
+        }
+
+        if (!surveyState.selectedMakerId) {
+          setStatus('自販機メーカー画像を1つ選択してください。', 'error');
+          return;
+        }
+
+        const payload = {
+          products: surveyState.selectedProducts,
+          manufacturerImage: surveyState.selectedMakerId
+            ? { id: surveyState.selectedMakerId, name: surveyState.selectedMakerName }
+            : null,
+          feedback: document.getElementById('feedback').value || '',
+        };
+
+        setStatus('送信中です...', '');
+        const button = document.getElementById('submitButton');
+        button.disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function() {
+            setStatus('ご協力ありがとうございました！', 'success');
+            button.disabled = false;
+          })
+          .withFailureHandler(function(err) {
+            console.error(err);
+            setStatus('送信に失敗しました。時間を置いて再度お試しください。', 'error');
+            button.disabled = false;
+          })
+          .submitVendingSurvey(payload);
+      }
+    </script>
+  </body>
+</html>
