@@ -23,6 +23,8 @@ function doGet(e) {
         return renderMediaRegisterPage();
       case 'promotion-apply':
         return renderPromotionApplyPage();
+      case 'vending-survey':
+        return renderVendingSurveyPage();
       default:
         return renderPortalPage(params);
     }
@@ -65,6 +67,15 @@ function renderPromotionApplyPage() {
   return template
     .evaluate()
     .setTitle('提携申請登録')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function renderVendingSurveyPage() {
+  const template = HtmlService.createTemplateFromFile('VendingSurvey');
+  template.baseUrl = ScriptApp.getService().getUrl();
+  return template
+    .evaluate()
+    .setTitle('自動販売機アンケート')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
